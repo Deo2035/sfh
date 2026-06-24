@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>绥芬河市工业信息科技局服务平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gov-red: #c8102e;
+            --gov-red-dark: #a00d24;
+            --gov-blue: #1c3d72;
+            --gov-blue-dark: #122850;
+            --text-1: #1a1a1a;
+            --text-2: #4a4a4a;
+            --text-3: #7a7a7a;
+            --line: #e6e6e6;
+            --bg: #f4f6f9;
+            --card: #ffffff;
+        }
+
+        html, body {
+            font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Source Han Sans CN", "Noto Sans CJK SC", sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        img, svg { display: block; max-width: 100%; }
+
+        /* ===== 顶部红条 ===== */
+        .topbar {
+            background: var(--gov-red);
+            color: #fff;
+            font-size: 12px;
+        }
+        .topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; opacity: 0.95; }
+        .topbar-right { display: flex; align-items: center; gap: 18px; }
+        .topbar-right a { opacity: 0.95; transition: opacity .2s; }
+        .topbar-right a:hover { opacity: 1; text-decoration: underline; }
+        .topbar-divider { opacity: 0.5; }
+
+        /* ===== 头部 Banner ===== */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 28px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .gov-emblem {
+            width: 64px;
+            height: 64px;
+            flex-shrink: 0;
+            background: var(--gov-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffd54a;
+            box-shadow: 0 2px 8px rgba(200,16,46,0.2);
+        }
+        .gov-emblem svg { width: 40px; height: 40px; }
+        .header-titles { flex: 1; min-width: 0; }
+        .header-titles h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+        .header-titles .subtitle {
+            font-size: 13px;
+            color: var(--text-3);
+            margin-top: 6px;
+            letter-spacing: 2px;
+        }
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8f9fb;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 10px 14px;
+        }
+        .header-right input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 200px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+        .header-right .search-btn {
+            color: var(--gov-red);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ===== 主导航 ===== */
+        .navbar {
+            background: var(--gov-blue);
+        }
+        .navbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item {
+            padding: 0 28px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            transition: background .2s;
+            position: relative;
+            white-space: nowrap;
+        }
+        .nav-item:first-child { border-left: 1px solid rgba(255,255,255,0.08); }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ffd54a;
+        }
+
+        /* ===== 公告条 ===== */
+        .notice-bar {
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+        .notice-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+        .notice-tag {
+            background: var(--gov-red);
+            color: #fff;
+            padding: 2px 10px;
+            font-size: 12px;
+            border-radius: 2px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .notice-text { color: var(--text-2); flex: 1; min-width: 0; }
+        .notice-date { margin-left: auto; color: var(--text-3); flex-shrink: 0; }
+
+        /* ===== 主体 ===== */
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 48px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .page-title-bar {
+            width: 4px;
+            height: 22px;
+            background: var(--gov-red);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .page-title h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+        .page-desc {
+            color: var(--text-3);
+            font-size: 13px;
+            margin-bottom: 24px;
+            padding-left: 16px;
+        }
+
+        .section { margin-bottom: 36px; }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--gov-blue);
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        .section-head .left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .section-head .icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(28,61,114,0.08);
+            color: var(--gov-blue);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-head .icon svg { width: 20px; height: 20px; }
+        .section-head h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-1);
+        }
+        .section-head .en {
+            font-size: 12px;
+            color: var(--text-3);
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        .section-head .right {
+            font-size: 13px;
+            color: var(--text-3);
+            flex-shrink: 0;
+        }
+        .section-head .right .num {
+            color: var(--gov-red);
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 22px 20px;
+            transition: all .25s ease;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: pointer;
+        }
+        .card:hover {
+            border-color: var(--gov-blue);
+            box-shadow: 0 6px 20px rgba(28,61,114,0.12);
+            transform: translateY(-2px);
+        }
+        .card .card-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--gov-red) 0%, #e63d56 100%);
+            color: #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card .card-icon svg { width: 22px; height: 22px; }
+        .card .card-body { flex: 1; min-width: 0; }
+        .card .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-1);
+            margin-bottom: 4px;
+        }
+        .card .card-desc {
+            font-size: 12px;
+            color: var(--text-3);
+            line-height: 1.5;
+        }
+        .card .card-arrow {
+            color: var(--text-3);
+            transition: all .25s;
+            align-self: center;
+            flex-shrink: 0;
+        }
+        .card:hover .card-arrow { color: var(--gov-red); transform: translateX(3px); }
+
+        /* ===== 友情链接 ===== */
+        .friends {
+            background: #fff;
+            border: 1px solid var(--line);
+            padding: 18px 20px;
+            margin-top: 20px;
+        }
+        .friends-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-1);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .friends-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: var(--gov-red);
+        }
+        .friends-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .friends-list a {
+            color: var(--text-3);
+            font-size: 13px;
+            transition: color .2s;
+        }
+        .friends-list a:hover { color: var(--gov-red); }
+
+        /* ===== 底部 ===== */
+        .footer {
+            background: var(--gov-blue-dark);
+            color: rgba(255,255,255,0.75);
+            margin-top: 40px;
+        }
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px 20px;
+        }
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-col { font-size: 13px; line-height: 1.9; min-width: 0; }
+        .footer-col strong { color: #fff; font-weight: 600; display: block; margin-bottom: 4px; font-size: 12px; opacity: 0.6; letter-spacing: 1px; }
+        .footer-bottom {
+            padding-top: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.8;
+        }
+        .tech-support {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffd54a;
+            border-bottom: 1px dashed rgba(255,213,74,0.4);
+            padding-bottom: 1px;
+            transition: color .2s;
+        }
+        .tech-support:hover { color: #fff; border-bottom-color: #fff; }
+        .tech-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: var(--text-1);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            white-space: nowrap;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            transition: opacity .2s, visibility .2s;
+            z-index: 100;
+        }
+        .tech-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #fff;
+        }
+        .tech-tooltip .label { color: var(--text-3); margin-right: 6px; font-size: 12px; }
+        .tech-tooltip .email { color: var(--gov-red); font-weight: 600; font-family: Consolas, Monaco, monospace; }
+        .tech-support:hover .tech-tooltip,
+        .tech-support:focus .tech-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ===== 响应式：平板 ===== */
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            .header-titles h1 { font-size: 22px; }
+            .header-right input { width: 140px; }
+            .nav-item { padding: 0 20px; font-size: 14px; }
+        }
+
+        /* ===== 响应式：手机 ===== */
+        @media (max-width: 768px) {
+            .topbar-inner, .header-inner, .navbar-inner, .notice-inner, main, .footer-inner {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .topbar { font-size: 11px; }
+            .topbar-left { gap: 8px; }
+            .topbar-left .welcome-text { display: none; }
+            .topbar-right { gap: 10px; }
+            .topbar-right .extra { display: none; }
+
+            .header-inner { padding: 16px 16px; gap: 12px; }
+            .gov-emblem { width: 48px; height: 48px; }
+            .gov-emblem svg { width: 30px; height: 30px; }
+            .header-titles h1 { font-size: 17px; letter-spacing: 0; }
+            .header-titles .subtitle { font-size: 10px; margin-top: 4px; letter-spacing: 1px; }
+            .header-right { display: none; }
+
+            /* 导航改为横向滚动 */
+            .navbar-inner {
+                padding: 0 8px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .navbar-inner::-webkit-scrollbar { display: none; }
+            .nav-item {
+                padding: 0 16px;
+                font-size: 13px;
+                height: 42px;
+                flex-shrink: 0;
+            }
+            .nav-item:first-child { border-left: none; }
+
+            .notice-inner { padding: 10px 16px; gap: 8px; flex-wrap: wrap; }
+            .notice-date { display: none; }
+            .notice-text { font-size: 12px; }
+
+            main { padding: 20px 16px 32px; }
+            .page-title h2 { font-size: 17px; }
+            .page-desc { font-size: 12px; padding-left: 12px; }
+
+            .section { margin-bottom: 24px; }
+            .section-head { padding: 12px 14px; }
+            .section-head h3 { font-size: 15px; }
+            .section-head .en { display: none; }
+            .section-head .right { font-size: 12px; }
+
+            .grid { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 16px; }
+            .card .card-icon { width: 36px; height: 36px; }
+            .card .card-icon svg { width: 20px; height: 20px; }
+            .card .card-title { font-size: 14px; }
+
+            .friends { padding: 14px 16px; }
+            .friends-list { gap: 12px 16px; }
+            .friends-list a { font-size: 12px; }
+
+            .footer { margin-top: 24px; }
+            .footer-inner { padding: 24px 16px 16px; }
+            .footer-row { flex-direction: column; gap: 16px; padding-bottom: 16px; }
+            .footer-col { font-size: 13px; line-height: 1.7; }
+            .footer-bottom { font-size: 11px; }
+
+            /* 移动端 tooltip 改为向下弹出，避免被裁剪 */
+            .tech-tooltip {
+                bottom: auto;
+                top: calc(100% + 10px);
+                left: 50%;
+            }
+            .tech-tooltip::after {
+                top: auto;
+                bottom: 100%;
+                border-top-color: transparent;
+                border-bottom-color: #fff;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header-titles h1 { font-size: 15px; }
+            .nav-item { padding: 0 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部条 -->
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <span id="todayDate"></span>
+            <span class="topbar-divider">|</span>
+            <span class="welcome-text">欢迎访问绥芬河市工业信息科技局服务平台</span>
+        </div>
+        <div class="topbar-right">
+            <a href="#" class="extra">无障碍浏览</a>
+            <span class="topbar-divider extra">|</span>
+            <a href="#" class="extra">长者版</a>
+            <span class="topbar-divider extra">|</span>
+            <a href="#">登录 / 注册</a>
+        </div>
+    </div>
+</div>
+
+<!-- 头部 -->
+<header class="header">
+    <div class="header-inner">
+        <div class="gov-emblem" aria-label="徽标">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 4 L36 14 L46 14 L38 21 L42 32 L32 25 L22 32 L26 21 L18 14 L28 14 Z" fill="currentColor"/>
+                <circle cx="32" cy="44" r="14" fill="none" stroke="currentColor" stroke-width="2"/>
+                <rect x="22" y="52" width="20" height="6" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="header-titles">
+            <h1>绥芬河市工业信息科技局服务平台</h1>
+            <div class="subtitle">SUIFENHE BUREAU OF INDUSTRY & INFORMATION TECHNOLOGY</div>
+        </div>
+        <div class="header-right">
+            <input type="text" placeholder="请输入关键词检索服务">
+            <span class="search-btn" aria-label="搜索">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+</header>
+
+<!-- 主导航 -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a class="nav-item active" href="#">首页</a>
+        <a class="nav-item" href="#">财务分析</a>
+        <a class="nav-item" href="#">企业测评</a>
+        <a class="nav-item" href="#">政策法规</a>
+        <a class="nav-item" href="#">通知公告</a>
+        <a class="nav-item" href="#">办事指南</a>
+        <a class="nav-item" href="#">互动咨询</a>
+    </div>
+</nav>
+
+<!-- 公告条 -->
+<div class="notice-bar">
+    <div class="notice-inner">
+        <span class="notice-tag">通知</span>
+        <span class="notice-text">平台已上线"企业财务五项能力分析"与"多类企业资质自测"共 13 项在线服务，欢迎使用。</span>
+        <span class="notice-date" id="serverTime"></span>
+    </div>
+</div>
+
+<main>
+    <div class="page-title">
+        <span class="page-title-bar"></span>
+        <h2>在线服务</h2>
+    </div>
+    <p class="page-desc">本平台提供企业财务能力分析与企业资质自测两类在线服务，所有工具免登录使用。</p>
+
+    <!-- 财务分析 -->
+    <section class="section">
+        <div class="section-head">
+            <div class="left">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <rect x="7" y="13" width="3" height="5"/>
+                        <rect x="12" y="9" width="3" height="9"/>
+                        <rect x="17" y="5" width="3" height="13"/>
+                    </svg>
+                </span>
+                <h3>企业财务情况分析</h3>
+                <span class="en">FINANCIAL ANALYSIS</span>
+            </div>
+            <div class="right">共 <span class="num">5</span> 项能力评估</div>
+        </div>
+        <div class="grid">
+            <a class="card" href="./111/debt_analysis.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="6" width="18" height="13" rx="1"/>
+                        <path d="M3 10h18M7 15h4"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">偿债能力分析</div>
+                    <div class="card-desc">评估企业短期与长期偿债风险</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./222/financial_analysis.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3l-9 9"/><path d="M15 3h6v6"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">营运能力分析</div>
+                    <div class="card-desc">评估资产周转与运营效率水平</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./333/profitability_analysis.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">盈利能力分析</div>
+                    <div class="card-desc">评估利润水平与盈利稳定性</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./444/profitability_analysis.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l3 6 6 .9-4.5 4.4 1 6.7L12 17l-5.5 3 1-6.7L3 8.9 9 8z"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">盈利质量分析</div>
+                    <div class="card-desc">评估盈利结构与现金含量</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./555/finance_growth_analysis.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 17l6-6 4 4 8-9"/><path d="M14 6h7v7"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">发展能力分析</div>
+                    <div class="card-desc">评估企业成长性与扩张潜力</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- 企业测评 -->
+    <section class="section">
+        <div class="section-head">
+            <div class="left">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 12l2 2 4-4"/><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/>
+                    </svg>
+                </span>
+                <h3>企业资质自我测评</h3>
+                <span class="en">QUALIFICATION SELF-ASSESSMENT</span>
+            </div>
+            <div class="right">共 <span class="num">8</span> 类企业</div>
+        </div>
+        <div class="grid">
+            <a class="card" href="./1gsqy/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">规上企业</div>
+                    <div class="card-desc">规模以上工业企业自测</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./3kjxzxqy/assessment.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">科技型中小企业</div>
+                    <div class="card-desc">科技型中小企业评价入库</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./4zjtxzxqy/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l9 5v6c0 5-4 9-9 10-5-1-9-5-9-10V7l9-5z"/>
+                        <path d="M12 8v4l3 2"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">专精特新中小企业</div>
+                    <div class="card-desc">专业化精细化特色新颖化</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./4zjtxxjr/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l9 4-3 5 3 5-9 4-9-4 3-5-3-5z"/>
+                        <path d="M12 7v10M8 12h8"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">专精特新小巨人</div>
+                    <div class="card-desc">国家级小巨人企业申报测评</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./5.cxx/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v6M12 22v-6M2 12h6M22 12h6"/>
+                        <circle cx="12" cy="12" r="6"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">创新型中小企业</div>
+                    <div class="card-desc">直通条件自测评估</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./6gfuhua/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6M12 12h.01"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">国家级科技企业孵化器</div>
+                    <div class="card-desc">国家级资质条件自测</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./6sfuhua/survey.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18"/><path d="M5 21V11l7-6 7 6v10"/><path d="M9 21v-5h6v5"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">省级企业孵化器</div>
+                    <div class="card-desc">省级资质条件自测</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+            <a class="card" href="./7.gaoqi/index.html">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 4h6l1 2h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1-2z"/>
+                        <circle cx="12" cy="13" r="3"/>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div class="card-title">高新技术企业</div>
+                    <div class="card-desc">国家高新技术企业自测</div>
+                </div>
+                <span class="card-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- 友情链接 -->
+    <div class="friends">
+        <div class="friends-title">友情链接</div>
+        <div class="friends-list">
+            <a href="#">中国政府网</a>
+            <a href="#">国家工业和信息化部</a>
+            <a href="#">国家科学技术部</a>
+            <a href="#">国家发展和改革委员会</a>
+            <a href="#">全国中小企业股份转让系统</a>
+            <a href="#">中国中小企业信息网</a>
+        </div>
+    </div>
+</main>
+
+<!-- 底部 -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-row">
+            <div class="footer-col">
+                <strong>主办单位</strong>
+                绥芬河市工业信息科技局
+            </div>
+            <div class="footer-col">
+                <strong>联系方式</strong>
+                0453-3962217
+            </div>
+            <div class="footer-col">
+                <strong>办公地址</strong>
+                黑龙江牡丹江市绥芬河市青云路129号工信局302室
+            </div>
+            <div class="footer-col">
+                <strong>技术支持</strong>
+                <span class="tech-support" tabindex="0">
+                    大连富乐达科技有限公司
+                    <span class="tech-tooltip">
+                        <span class="label">联系方式</span>
+                        <span class="email">ideallab@163.com</span>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2026 绥芬河市工业信息科技局　保留所有权利</div>
+            <div>建议使用 Chrome、Edge、Firefox 浏览器，分辨率 1280×720 以上浏览</div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 显示当前日期与时间
+    (function () {
+        var d = new Date();
+        var week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+        var s = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日 ' + week[d.getDay()];
+        var el = document.getElementById('todayDate');
+        if (el) el.textContent = s;
+        var t = document.getElementById('serverTime');
+        if (t) {
+            var pad = function (n) { return n < 10 ? '0' + n : n; };
+            t.textContent = '当前时间 ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+        }
+    })();
+</script>
+
+</body>
+</html>

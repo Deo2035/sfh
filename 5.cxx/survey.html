@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创新型中小企业直通条件-自我测评</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 200, 255, 0.6);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* 财务元素装饰 */
+        .financial-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .chart-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.3), transparent);
+            animation: slideIn 8s infinite ease-in-out;
+        }
+
+        .data-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00c8ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00c8ff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100vw); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00c8ff, #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0d2eb;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .question-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 200, 255, 0.2);
+            border-color: rgba(0, 200, 255, 0.6);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(45deg, #00c8ff, #00ffaa);
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(0, 200, 255, 0.2);
+            border-color: #00c8ff;
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border-color: #ff416c;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 65, 108, 0.5);
+            transform: scale(1.05);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 200px;
+            margin: 40px auto;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #00c8ff, #00ffaa);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 200, 255, 0.6);
+        }
+
+        .result-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid rgba(0, 200, 255, 0.4);
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .success-message {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+
+        .contact-info {
+            font-size: 1rem;
+            color: #a0d2eb;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+            
+            .option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景粒子 -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- 财务元素装饰 -->
+    <div class="financial-elements" id="financialElements"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>创新型中小企业直通条件-自我测评</h1>
+            <div class="subtitle">请根据您的实际情况进行选择</div>
+        </div>
+
+        <!-- 问题1 -->
+        <div class="question-container" style="animation-delay: 0.1s;">
+            <div class="question-number">1</div>
+            <div class="question-text">近三年内获得过国家级或省级科技奖励。</div>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'q1', 'yes')">是</div>
+                <div class="option" onclick="selectOption(this, 'q1', 'no')">否</div>
+            </div>
+        </div>
+
+        <!-- 问题2 -->
+        <div class="question-container" style="animation-delay: 0.2s;">
+            <div class="question-number">2</div>
+            <div class="question-text">拥有经认定的省部级以上研发机构。</div>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'q2', 'yes')">是</div>
+                <div class="option" onclick="selectOption(this, 'q2', 'no')">否</div>
+            </div>
+        </div>
+
+        <!-- 问题3 -->
+        <div class="question-container" style="animation-delay: 0.3s;">
+            <div class="question-number">3</div>
+            <div class="question-text">近三年新增股权融资总额（实缴）500万元以上。</div>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'q3', 'yes')">是</div>
+                <div class="option" onclick="selectOption(this, 'q3', 'no')">否</div>
+            </div>
+        </div>
+
+        <!-- 问题4 -->
+        <div class="question-container" style="animation-delay: 0.4s;">
+            <div class="question-number">4</div>
+            <div class="question-text">获得高新技术企业、国家级技术创新示范企业等荣誉。</div>
+            <div class="options">
+                <div class="option" onclick="selectOption(this, 'q4', 'yes')">是</div>
+                <div class="option" onclick="selectOption(this, 'q4', 'no')">否</div>
+            </div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <button class="submit-btn" onclick="showResult()">点击查看结果</button>
+
+        <!-- 结果显示区域 -->
+        <div class="result-container" id="resultContainer">
+            <div class="success-message" id="resultMessage"></div>
+            <div class="contact-info">
+                本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局<br>
+                联系电话：0453-3962217
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 存储用户选择的答案
+        const answers = {
+            q1: null,
+            q2: null,
+            q3: null,
+            q4: null
+        };
+
+        // 选择选项的函数
+        function selectOption(element, question, value) {
+            // 清除同个问题的其他选项选中状态
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // 设置当前选项为选中状态
+            element.classList.add('selected');
+            
+            // 保存答案
+            answers[question] = value;
+        }
+
+        // 显示结果的函数
+        function showResult() {
+            // 检查是否所有问题都已回答
+            const unanswered = Object.values(answers).filter(answer => answer === null);
+            
+            if (unanswered.length > 0) {
+                alert('请先完成所有问题的选择！');
+                return;
+            }
+
+            // 检查是否有至少一项选择"是"
+            const hasYes = Object.values(answers).some(answer => answer === 'yes');
+            
+            const resultContainer = document.getElementById('resultContainer');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (hasYes) {
+                resultMessage.innerHTML = '恭喜您，您有可能成为创新型中小企业，请联系绥芬河市工业信息科技局进行官方认定';
+                resultContainer.style.display = 'block';
+                
+                // 添加成功动画效果
+                resultContainer.style.animation = 'fadeIn 0.8s ease-out, glow 2s infinite alternate';
+            } else {
+                resultMessage.innerHTML = '根据您的选择，您目前可能不符合创新型中小企业的认定条件。建议继续努力提升企业创新能力。';
+                resultContainer.style.display = 'block';
+                resultContainer.style.borderColor = 'rgba(255, 100, 100, 0.4)';
+                document.querySelector('.success-message').style.color = '#ff6b6b';
+            }
+        }
+
+        // 创建动态背景粒子
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机设置粒子大小
+                const size = Math.random() * 5 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机设置初始位置
+                particle.style.left = `${Math.random() * 100}%`;
+                
+                // 随机设置动画延迟
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                // 随机设置透明度
+                particle.style.opacity = Math.random() * 0.6 + 0.2;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 创建财务元素装饰
+        function createFinancialElements() {
+            const container = document.getElementById('financialElements');
+            
+            // 创建图表线条
+            for (let i = 0; i < 8; i++) {
+                const line = document.createElement('div');
+                line.classList.add('chart-line');
+                line.style.top = `${10 + i * 12}%`;
+                line.style.width = `${Math.random() * 30 + 20}%`;
+                line.style.animationDelay = `${i * 0.5}s`;
+                container.appendChild(line);
+            }
+            
+            // 创建数据点
+            for (let i = 0; i < 15; i++) {
+                const point = document.createElement('div');
+                point.classList.add('data-point');
+                point.style.left = `${Math.random() * 100}%`;
+                point.style.top = `${Math.random() * 100}%`;
+                point.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(point);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createFinancialElements();
+            
+            // 添加滚动视差效果
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const rate = scrolled * -0.5;
+                document.querySelector('.particles').style.transform = `translateY(${rate}px)`;
+            });
+        });
+
+        // 添加额外的CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes glow {
+                from { box-shadow: 0 0 20px rgba(0, 255, 170, 0.3); }
+                to { box-shadow: 0 0 30px rgba(0, 255, 170, 0.6); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

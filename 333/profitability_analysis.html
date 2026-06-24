@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业盈利能力分析</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+            color: #4fc3f7;
+            letter-spacing: 2px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #bbdefb;
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px;
+            border: 1px solid #4fc3f7;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 16px;
+        }
+
+        .input-group select:focus, .input-group input:focus {
+            outline: none;
+            border-color: #00bcd4;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+        }
+
+        .formula-box {
+            background: rgba(0, 30, 60, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .formula-box h3 {
+            color: #4fc3f7;
+            margin-top: 0;
+        }
+
+        .formula-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .formula-list li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.6);
+            background: linear-gradient(45deg, #1e88e5, #00bcd4);
+        }
+
+        .result-box {
+            background: rgba(0, 30, 60, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            min-height: 200px;
+            border: 1px solid #4fc3f7;
+        }
+
+        .result-box h3 {
+            color: #4fc3f7;
+            margin-top: 0;
+        }
+
+        .result-content {
+            line-height: 1.8;
+        }
+
+        .financial-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .data-item {
+            background: rgba(33, 150, 243, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .data-item .label {
+            font-size: 14px;
+            color: #bbdefb;
+        }
+
+        .data-item .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #4fc3f7;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            min-width: 200px;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #bbdefb;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景粒子 -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <h1>企业财务情况分析-盈利能力分析</h1>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="profitTotal">利润总额（万元）</label>
+                <input type="number" id="profitTotal" placeholder="请输入利润总额">
+            </div>
+            
+            <div class="input-group">
+                <label for="netProfit">净利润（万元）</label>
+                <input type="number" id="netProfit" placeholder="请输入净利润">
+            </div>
+            
+            <div class="input-group">
+                <label for="operatingProfit">营业利润（万元）</label>
+                <input type="number" id="operatingProfit" placeholder="请输入营业利润">
+            </div>
+            
+            <div class="input-group">
+                <label for="revenue">营业收入（万元）</label>
+                <input type="number" id="revenue" placeholder="请输入营业收入">
+            </div>
+            
+            <div class="input-group">
+                <label for="sales">销售收入（万元）</label>
+                <input type="number" id="sales" placeholder="请输入销售收入">
+            </div>
+            
+            <div class="input-group">
+                <label for="assets">资产总额（万元）</label>
+                <input type="number" id="assets" placeholder="请输入资产总额">
+            </div>
+            
+            <div class="input-group">
+                <label for="equity">所有者权益（万元）</label>
+                <input type="number" id="equity" placeholder="请输入所有者权益">
+            </div>
+            
+            <div class="input-group">
+                <label for="costExpenses">成本费用总额（万元）</label>
+                <input type="number" id="costExpenses" placeholder="请输入成本费用总额">
+            </div>
+            
+            <div class="input-group">
+                <label for="interestExpense">利息支出（万元）</label>
+                <input type="number" id="interestExpense" placeholder="请输入利息支出">
+            </div>
+            
+            <div class="input-group">
+                <label for="industry">行业种类</label>
+                <input type="text" id="industry" placeholder="点击选择行业" readonly onclick="toggleDropdown()">
+                <div class="dropdown-menu" id="industryDropdown">
+                    <div class="dropdown-item" onclick="selectIndustry('农林牧渔业')">农林牧渔业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('工业')">工业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('建筑业')">建筑业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('批发业')">批发业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('零售业')">零售业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('交通运输业')">交通运输业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('仓储业')">仓储业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('邮政业')">邮政业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('住宿业')">住宿业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('餐饮业')">餐饮业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('信息传输业')">信息传输业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('软件和信息技术服务业')">软件和信息技术服务业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('房地产开发经营')">房地产开发经营</div>
+                    <div class="dropdown-item" onclick="selectIndustry('物业管理')">物业管理</div>
+                    <div class="dropdown-item" onclick="selectIndustry('租赁和商务服务业')">租赁和商务服务业</div>
+                    <div class="dropdown-item" onclick="selectIndustry('其他行业')">其他行业</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <h3>计算公式：</h3>
+            <ul class="formula-list">
+                <li>销售净利率 = （净利润 ÷ 销售收入）× 100%</li>
+                <li>资产净利率 = （净利润 ÷ 资产总额）× 100%</li>
+                <li>ROE权益净利率 = （净利润 ÷ 所有者权益）× 100%</li>
+                <li>ROA总资产报酬率 = [（利润总额 + 利息支出）÷ 资产总额] × 100%</li>
+                <li>营业利润率 = （营业利润 ÷ 营业收入）× 100%</li>
+                <li>成本费用利润率 = （利润总额 ÷ 成本费用总额）× 100%</li>
+            </ul>
+        </div>
+
+        <div class="button-container">
+            <button onclick="calculateProfitability()">盈利能力分析</button>
+        </div>
+
+        <div class="result-box">
+            <h3>盈利能力分析结果</h3>
+            <div id="resultContent" class="result-content">
+                请填写相关信息并点击"盈利能力分析"按钮获取分析结果...
+            </div>
+        </div>
+        
+        <div class="footer">
+            本结果仅供参考，如有疑问，请联系绥芬河市工业信息科技局 0453-3962217
+        </div>
+    </div>
+
+    <script>
+        // 创建动态背景粒子
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const size = Math.random() * 20 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画时间
+                const duration = Math.random() * 20 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // 随机动画延迟
+                const delay = Math.random() * 5;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 显示或隐藏行业选择下拉菜单
+        function toggleDropdown() {
+            const dropdown = document.getElementById('industryDropdown');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        }
+
+        // 选择行业
+        function selectIndustry(industry) {
+            document.getElementById('industry').value = industry;
+            document.getElementById('industryDropdown').style.display = 'none';
+        }
+
+        // 计算盈利能力
+        function calculateProfitability() {
+            // 获取输入值
+            const profitTotal = parseFloat(document.getElementById('profitTotal').value) || 0;
+            const netProfit = parseFloat(document.getElementById('netProfit').value) || 0;
+            const operatingProfit = parseFloat(document.getElementById('operatingProfit').value) || 0;
+            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+            const sales = parseFloat(document.getElementById('sales').value) || 0;
+            const assets = parseFloat(document.getElementById('assets').value) || 0;
+            const equity = parseFloat(document.getElementById('equity').value) || 0;
+            const costExpenses = parseFloat(document.getElementById('costExpenses').value) || 0;
+            const interestExpense = parseFloat(document.getElementById('interestExpense').value) || 0;
+            const industry = document.getElementById('industry').value || '未选择';
+
+            // 计算各项指标
+            const salesNetMargin = sales !== 0 ? (netProfit / sales) * 100 : 0;
+            const roa = assets !== 0 ? (netProfit / assets) * 100 : 0;
+            const roe = equity !== 0 ? (netProfit / equity) * 100 : 0;
+            const totalAssetsReturn = assets !== 0 ? ((profitTotal + interestExpense) / assets) * 100 : 0;
+            const operatingProfitMargin = revenue !== 0 ? (operatingProfit / revenue) * 100 : 0;
+            const costProfitRatio = costExpenses !== 0 ? (profitTotal / costExpenses) * 100 : 0;
+
+            // 创建结果显示
+            let resultHtml = `
+                <div class="financial-data">
+                    <div class="data-item">
+                        <div class="label">销售净利率</div>
+                        <div class="value">${salesNetMargin.toFixed(2)}%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="label">资产净利率(ROA)</div>
+                        <div class="value">${roa.toFixed(2)}%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="label">权益净利率(ROE)</div>
+                        <div class="value">${roe.toFixed(2)}%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="label">总资产报酬率</div>
+                        <div class="value">${totalAssetsReturn.toFixed(2)}%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="label">营业利润率</div>
+                        <div class="value">${operatingProfitMargin.toFixed(2)}%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="label">成本费用利润率</div>
+                        <div class="value">${costProfitRatio.toFixed(2)}%</div>
+                    </div>
+                </div>
+            `;
+
+            // 根据行业特点生成分析报告
+            resultHtml += `<p><strong>基于${industry}的盈利能力分析与建议：</strong></p>`;
+            
+            // 分析盈利能力
+            if (salesNetMargin > 15) {
+                resultHtml += `<p>• 销售净利率较高(${salesNetMargin.toFixed(2)}%)，表明公司每单位销售收入带来的净利润较多，产品盈利能力强。</p>`;
+            } else if (salesNetMargin > 5) {
+                resultHtml += `<p>• 销售净利率(${salesNetMargin.toFixed(2)}%)处于行业中等水平，需关注成本控制和定价策略以提升盈利。</p>`;
+            } else {
+                resultHtml += `<p>• 销售净利率较低(${salesNetMargin.toFixed(2)}%)，可能存在成本过高或定价不合理的问题。</p>`;
+            }
+            
+            if (roa > 10) {
+                resultHtml += `<p>• 资产净利率较高(${roa.toFixed(2)}%)，表明公司资产利用效率高，管理水平优秀。</p>`;
+            } else if (roa > 3) {
+                resultHtml += `<p>• 资产净利率(${roa.toFixed(2)}%)处于合理范围，但仍有提升空间。</p>`;
+            } else {
+                resultHtml += `<p>• 资产净利率较低(${roa.toFixed(2)}%)，说明资产利用效率有待提高。</p>`;
+            }
+            
+            if (roe > 15) {
+                resultHtml += `<p>• 权益净利率较高(${roe.toFixed(2)}%)，对股东投入资本的回报率高，投资吸引力强。</p>`;
+            } else if (roe > 8) {
+                resultHtml += `<p>• 权益净利率(${roe.toFixed(2)}%)表现良好，但可进一步优化资本结构。</p>`;
+            } else {
+                resultHtml += `<p>• 权益净利率较低(${roe.toFixed(2)}%)，股东回报率有待提升。</p>`;
+            }
+            
+            if (operatingProfitMargin > 12) {
+                resultHtml += `<p>• 营业利润率较高(${operatingProfitMargin.toFixed(2)}%)，主营业务盈利能力强。</p>`;
+            } else if (operatingProfitMargin > 5) {
+                resultHtml += `<p>• 营业利润率(${operatingProfitMargin.toFixed(2)}%)处于中等水平，需加强主营业务管理。</p>`;
+            } else {
+                resultHtml += `<p>• 营业利润率较低(${operatingProfitMargin.toFixed(2)}%)，主营业务盈利能力不足。</p>`;
+            }
+            
+            if (costProfitRatio > 10) {
+                resultHtml += `<p>• 成本费用利润率较高(${costProfitRatio.toFixed(2)}%)，成本控制效果显著。</p>`;
+            } else if (costProfitRatio > 5) {
+                resultHtml += `<p>• 成本费用利润率(${costProfitRatio.toFixed(2)}%)尚可，但仍有改善空间。</p>`;
+            } else {
+                resultHtml += `<p>• 成本费用利润率较低(${costProfitRatio.toFixed(2)}%)，需加强成本费用管理。</p>`;
+            }
+            
+            // 根据行业提供具体建议
+            switch(industry) {
+                case '工业':
+                    resultHtml += `<p><strong>针对工业企业的建议：</strong>加强生产流程优化，提高设备利用率；考虑采用智能制造技术降低人工成本；优化供应链管理以降低原材料采购成本。</p>`;
+                    break;
+                case '零售业':
+                    resultHtml += `<p><strong>针对零售业的建议：</strong>优化商品结构，增加高毛利商品占比；加强库存管理，减少滞销商品；通过数据分析了解消费者偏好，精准营销。</p>`;
+                    break;
+                case '建筑业':
+                    resultHtml += `<p><strong>针对建筑业的建议：</strong>加强项目预算管理，控制施工成本；提高工程进度管理效率；关注建材价格波动，做好采购规划。</p>`;
+                    break;
+                case '信息传输业':
+                case '软件和信息技术服务业':
+                    resultHtml += `<p><strong>针对信息技术行业的建议：</strong>加大研发投入，提升核心竞争力；重视人才激励，保持技术领先优势；拓展服务领域，提高客户粘性。</p>`;
+                    break;
+                case '房地产开发经营':
+                    resultHtml += `<p><strong>针对房地产业的建议：</strong>密切关注政策变化，调整开发策略；优化项目选址，提高投资效益；加强资金管理，防范市场风险。</p>`;
+                    break;
+                default:
+                    resultHtml += `<p><strong>综合建议：</strong>持续关注市场变化，优化业务结构；加强内部管理，提升运营效率；注重技术创新，增强竞争优势。</p>`;
+            }
+            
+            resultHtml += `<p>以上分析结果严格遵循《企业会计准则》、《企业财务通则》等相关法规，结合行业特点进行评估。</p>`;
+            
+            document.getElementById('resultContent').innerHTML = resultHtml;
+        }
+
+        // 点击页面其他区域关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const industryInput = document.getElementById('industry');
+            const dropdown = document.getElementById('industryDropdown');
+            
+            if (!industryInput.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            createParticles();
+        };
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

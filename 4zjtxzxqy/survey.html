@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专精特新中小企业-自我测评器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #00ccff, transparent);
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .option {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background: rgba(0, 200, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .option.selected {
+            background: rgba(255, 0, 0, 0.3);
+            border-color: #ff0000;
+            color: #ffaaaa;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        .result-container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .result-text {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .contact-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .btn-check {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .btn-check:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 114, 255, 0.6);
+        }
+
+        .finance-icon {
+            position: absolute;
+            opacity: 0.05;
+            font-size: 80px;
+            z-index: -1;
+        }
+
+        .finance-icon:nth-child(1) { top: 10%; left: 5%; transform: rotate(15deg); }
+        .finance-icon:nth-child(2) { top: 20%; right: 10%; transform: rotate(-20deg); }
+        .finance-icon:nth-child(3) { bottom: 30%; left: 15%; transform: rotate(30deg); }
+        .finance-icon:nth-child(4) { bottom: 15%; right: 20%; transform: rotate(-10deg); }
+        .finance-icon:nth-child(5) { top: 40%; left: 25%; transform: rotate(25deg); }
+        
+        .financial-symbol {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .options {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景 -->
+    <div id="background"></div>
+    
+    <!-- 财务图标装饰 -->
+    <div class="finance-icon">📊</div>
+    <div class="finance-icon">💰</div>
+    <div class="finance-icon">📈</div>
+    <div class="finance-icon">📉</div>
+    <div class="finance-icon">💡</div>
+    
+    <div class="container">
+        <header>
+            <h1>专精特新中小企业-自我测评器</h1>
+        </header>
+        
+        <main>
+            <!-- 问题列表 -->
+            <div class="question-container">
+                <div class="question-title">
+                    （一）已获得科技和创新型中小企业称号，截至上年末从事特定细分市场时间达 3 年以上。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="1" data-value="yes">是</div>
+                    <div class="option" data-question="1" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-title">
+                    （二）上年度营业收入总额达 1500 万元以上或近两年新增股权投资（合格机构投资者的实缴额）总额 2000 万元以上，主营业务收入总额占营业收入总额比重不低于 80%，上年末资产负债率不超过 80%。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="2" data-value="yes">是</div>
+                    <div class="option" data-question="2" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-title">
+                    （三）近两年研发费用均不低于 100 万元，且每年占营业收入比重均不低于 3%。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="3" data-value="yes">是</div>
+                    <div class="option" data-question="3" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-title">
+                    （四）拥有 1 项以上与主导产品相关的Ι类知识产权，且实际应用并已产生经济效益。对近三年获得省部级以上科学技术奖励（排名前三）或拥有经认定的省部级以上研发机构的企业，不考察本项指标。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="4" data-value="yes">是</div>
+                    <div class="option" data-question="4" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-title">
+                    （五）主导产品在国内或国际细分市场占有率较为靠前， 且享有一定知名度、影响力。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="5" data-value="yes">是</div>
+                    <div class="option" data-question="5" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-title">
+                    （六）本年度中小企业专精特新发展评价得分达 50 分以上（复核企业近两年任意一年达 50 分以上即可）。指标体系见《中小企业专精特新发展评价指标体系（试行）》。
+                </div>
+                <div class="options">
+                    <div class="option" data-question="6" data-value="yes">是</div>
+                    <div class="option" data-question="6" data-value="no">否</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-check" onclick="checkResults()">点击查看结果</button>
+            </div>
+            
+            <!-- 结果显示区域 -->
+            <div class="result-container" id="resultContainer">
+                <div class="result-text" id="resultText"></div>
+                <div class="contact-info">
+                    本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局0453-3962217
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始化选项点击事件
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                
+                // 移除同组其他选项的选择状态
+                document.querySelectorAll(`[data-question="${question}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // 添加当前选项的选择状态
+                this.classList.add('selected');
+            });
+        });
+
+        // 创建动态背景粒子
+        function createParticles() {
+            const bg = document.getElementById('background');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const size = Math.random() * 100 + 20;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                // 随机透明度
+                particle.style.opacity = `${Math.random() * 0.1}`;
+                
+                bg.appendChild(particle);
+            }
+        }
+
+        // 检查结果函数
+        function checkResults() {
+            // 获取所有问题的答案
+            const answers = [];
+            for (let i = 1; i <= 6; i++) {
+                const selectedOption = document.querySelector(`[data-question="${i}"].selected`);
+                if (selectedOption) {
+                    answers.push(selectedOption.getAttribute('data-value'));
+                } else {
+                    alert(`请完成第${i}题的选择！`);
+                    return;
+                }
+            }
+            
+            // 检查是否所有答案都是"是"
+            const allYes = answers.every(answer => answer === 'yes');
+            
+            const resultContainer = document.getElementById('resultContainer');
+            const resultText = document.getElementById('resultText');
+            
+            if (allYes) {
+                resultText.innerHTML = '恭喜您，您有可能成为专精特新中小企业，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策';
+                resultText.style.color = '#4cff8f'; // 绿色文字
+            } else {
+                resultText.innerHTML = '很遗憾，根据您的选择，暂时不符合专精特新中小企业条件。请继续努力提升企业实力！';
+                resultText.style.color = '#ff6b6b'; // 红色文字
+            }
+            
+            resultContainer.style.display = 'block';
+            
+            // 平滑滚动到结果区域
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            createParticles();
+            
+            // 添加一些财务符号到背景
+            const symbols = ['$', '€', '¥', '%', '¢', '£', '₩', '₹', '₽'];
+            for (let i = 0; i < 50; i++) {
+                const symbol = document.createElement('div');
+                symbol.className = 'financial-symbol';
+                symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                symbol.style.left = `${Math.random() * 100}%`;
+                symbol.style.top = `${Math.random() * 100}%`;
+                symbol.style.transform = `rotate(${Math.random() * 360}deg)`;
+                symbol.style.fontSize = `${Math.random() * 20 + 10}px`;
+                document.body.appendChild(symbol);
+            }
+        };
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

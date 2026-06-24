@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>省级企业孵化器-自我测评器</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-1000px) translateX(1000px) rotate(720deg);
+            }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+            letter-spacing: 2px;
+        }
+
+        .section {
+            background: rgba(25, 40, 65, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+            border: 1px solid rgba(0, 200, 255, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #4fc3f7;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .question {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .question:hover {
+            background-color: rgba(40, 60, 90, 0.5);
+        }
+
+        .question-text {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .option {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 15px;
+            background: rgba(60, 80, 120, 0.6);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .option-label {
+            margin-left: 5px;
+        }
+
+        .option input[type="radio"]:checked + .option-label {
+            color: #ff5252;
+            font-weight: bold;
+        }
+
+        .option:hover {
+            background: rgba(80, 120, 180, 0.8);
+            transform: scale(1.05);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #getResult {
+            padding: 12px 30px;
+            font-size: 1.2em;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        }
+
+        #getResult:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.8);
+        }
+
+        #result {
+            background: rgba(30, 50, 80, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        .financial-element {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 12px;
+            color: #4fc3f7;
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景 -->
+    <div class="background" id="background"></div>
+    
+    <div class="container">
+        <h1>省级企业孵化器-自我测评器</h1>
+        
+        <div class="section">
+            <div class="section-title">省级标准级科技型企业孵化器</div>
+            
+            <div class="question">
+                <div class="question-text">1. 在黑龙江省登记注册，具有独立法人资格、完善的运营管理体系和较强的孵化服务能力。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q1" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">2. 具有稳定清晰的孵化场地，可自主支配（自有、租赁或协议使用）的孵化场地面积不低于2000平方米。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q2" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">3. 具备职业化运营团队，团队负责人具有相关产业背景、创业投资、技术洞察、企业管理等方面丰富经验；配备较强的专业孵化服务人员和创业导师，专职孵化服务人员占机构总人数60%以上，每10家在孵企业至少配备1名创业导师。鼓励设立专职技术经理人岗位。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q3" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">4. 在孵企业不少于20家，其中上年度新增注册企业数占比不低于10%，科技型中小企业、创新型中小企业占比不低于20%。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q4" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">5. 上年度不少于20%的在孵企业营业收入或研发经费投入同比增长超过10%。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q5" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">6. 单独核算孵化服务收入，上年度除房租及物业之外的收入占总收入的比例不低于15%。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q6" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">7. 上年度至少10%的在孵企业成为毕业企业。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q7" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">8. 按照国家统计局批准的创新创业类服务机构统计调查制度，至少报送1年统计数据。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q8" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">9. 遵守国家法律法规，3年内未发生重大环保、质量和安全事故，未被列为严重失信主体，没有重大违法行为或涉嫌重大违法正在接受有关部门审查的情况。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q9" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">省级卓越级科技型企业孵化器</div>
+            
+            <div class="question">
+                <div class="question-text">10. 上述9项是否均满足条件</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q10" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">11. 产业属性鲜明。聚焦战略性新兴产业和未来产业发展方向，围绕细分领域开展超前孵化。能够联动技术转移机构、概念验证中心、中试熟化平台等机构，为在孵企业提供成果评价、验证熟化、场景开发等服务，致力于孵化培育技术水平领先、知识产权密集、发展前景良好的硬科技企业。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q11" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q11" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">12. 资本运作高效。单独运营或联动不低于300万元的孵化资金、股权投资基金，上年度完成股权投资且确权实缴以及通过知识产权、房屋租金、孵化服务费等作价入股投资的在孵企业占比不低于10%，或上年度获得投融资的在孵企业占比不低于10%。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q12" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q12" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">13. 专业人才汇聚。由拥有丰富从业经验的高级管理人员或有行业影响力的产学研人才牵头，带领一支具有科学家思维、工程师技术、创业者韧性、投资人眼光、管理者智慧、产业链资源的一流创业孵化团队，能够联动省内外创新资源和人才开展深度孵化。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q13" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q13" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="question">
+                <div class="question-text">14. 平台功能完善。构建开放式服务支撑平台，深度协同各类专业服务机构，精准导入项目筛选、早期投资、知识产权、工业设计、供应链及产业链资源等关键要素，为科技企业提供全过程创新、全链条加速、全周期赋能服务。近两年累计服务和投资收入占总收入比重不低于20%。</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q14" value="true">
+                        <span class="option-label">是</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q14" value="false">
+                        <span class="option-label">否</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <button id="getResult">点击查看结果</button>
+        </div>
+        
+        <div id="result">
+            请先完成问卷并点击"点击查看结果"
+        </div>
+        
+        <div class="contact-info">
+            本结果仅供参考，如有疑问，请联系绥芬河市工业信息科技局 0453-3962217
+        </div>
+    </div>
+
+    <script>
+        // 创建动态背景粒子
+        function createParticles() {
+            const background = document.getElementById('background');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const size = Math.random() * 100 + 20;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画时间
+                particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                
+                // 随机延迟
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                background.appendChild(particle);
+            }
+        }
+        
+        // 添加财务元素
+        function addFinancialElements() {
+            const financialSymbols = ['%', '$', '€', '¥', '¢', '£', '∑', '∏', '∫', '∂', '∇', '√', '∞', '≈', '≠', '≤', '≥'];
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < 20; i++) {
+                const elem = document.createElement('div');
+                elem.classList.add('financial-element');
+                elem.textContent = financialSymbols[Math.floor(Math.random() * financialSymbols.length)];
+                elem.style.left = `${Math.random() * 100}%`;
+                elem.style.top = `${Math.random() * 100}%`;
+                elem.style.fontSize = `${Math.random() * 10 + 8}px`;
+                elem.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(elem);
+            }
+        }
+        
+        // 获取结果
+        document.getElementById('getResult').addEventListener('click', function() {
+            // 获取所有问题的答案
+            let standardAnswers = [];
+            let excellentAnswers = [];
+            
+            for (let i = 1; i <= 9; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for (let j = 0; j < radios.length; j++) {
+                    if (radios[j].checked) {
+                        standardAnswers.push(radios[j].value === 'true');
+                        break;
+                    }
+                }
+            }
+            
+            for (let i = 10; i <= 14; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for (let j = 0; j < radios.length; j++) {
+                    if (radios[j].checked) {
+                        excellentAnswers.push(radios[j].value === 'true');
+                        break;
+                    }
+                }
+            }
+            
+            // 检查是否有未回答的问题
+            if (standardAnswers.length !== 9 || excellentAnswers.length !== 5) {
+                alert('请完成所有问题后再点击结果');
+                return;
+            }
+            
+            // 判断结果
+            const allStandard = standardAnswers.every(answer => answer);
+            const allExcellent = excellentAnswers.every(answer => answer);
+            const q10To14True = excellentAnswers.slice(0, 5).every(answer => answer);
+            
+            let resultText = '';
+            
+            if (allStandard && allExcellent) {
+                resultText = '恭喜您，您有可能成为省级卓越级科技型企业孵化器，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策';
+            } else if (q10To14True) {
+                resultText = '恭喜您，您有可能成为省级卓越级科技型企业孵化器，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策';
+            } else if (allStandard) {
+                resultText = '恭喜您，您有可能成为省级标准级科技型企业孵化器，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策';
+            } else {
+                resultText = '您有可能还不是省级科技型企业孵化器，请继续努力，如需专业指导，请联系绥芬河市工业信息科技局';
+            }
+            
+            document.getElementById('result').textContent = resultText;
+        });
+        
+        // 初始化
+        window.onload = function() {
+            createParticles();
+            addFinancialElements();
+        };
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

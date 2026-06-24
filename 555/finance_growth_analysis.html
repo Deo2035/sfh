@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业财务情况分析-发展能力分析</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #1a2a6c, #2a4d69, #4b86b4, #393f4d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #4DA6FF, transparent);
+            margin: 10px auto;
+        }
+
+        .input-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-group {
+            flex: 1 0 300px;
+            padding: 10px;
+            min-width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4DA6FF;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4DA6FF;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #66ffcc;
+            box-shadow: 0 0 10px rgba(102, 255, 204, 0.5);
+        }
+
+        .industry-select {
+            position: relative;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .industry-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4DA6FF;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .industry-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #4DA6FF;
+            border-radius: 8px;
+            z-index: 100;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .industry-dropdown.show {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .industry-option {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s;
+        }
+
+        .industry-option:hover {
+            background: rgba(77, 166, 255, 0.3);
+        }
+
+        button {
+            background: linear-gradient(to right, #4DA6FF, #66ffcc);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-box {
+            background: rgba(0, 30, 60, 0.6);
+            border: 1px solid #4DA6FF;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .formula-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-title {
+            color: #66ffcc;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .formula-list {
+            padding-left: 20px;
+        }
+
+        .formula-item {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(77, 166, 255, 0.1);
+            border: 1px solid rgba(77, 166, 255, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="floating-elements" id="floatingElements"></div>
+
+    <div class="container">
+        <header>
+            <h1>企业财务情况分析-发展能力分析</h1>
+        </header>
+
+        <section class="input-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endingEquity">期末所有者权益（万元）</label>
+                    <input type="number" id="endingEquity" placeholder="请输入期末所有者权益">
+                </div>
+                <div class="form-group">
+                    <label for="beginningEquity">期初所有者权益（万元）</label>
+                    <input type="number" id="beginningEquity" placeholder="请输入期初所有者权益">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endingSales">期末销售额（万元）</label>
+                    <input type="number" id="endingSales" placeholder="请输入期末销售额">
+                </div>
+                <div class="form-group">
+                    <label for="beginningSales">期初销售额（万元）</label>
+                    <input type="number" id="beginningSales" placeholder="请输入期初销售额">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endingNetProfit">期末净利润（万元）</label>
+                    <input type="number" id="endingNetProfit" placeholder="请输入期末净利润">
+                </div>
+                <div class="form-group">
+                    <label for="beginningNetProfit">期初净利润（万元）</label>
+                    <input type="number" id="beginningNetProfit" placeholder="请输入期初净利润">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="endingOperatingProfit">期末营业利润（万元）</label>
+                    <input type="number" id="endingOperatingProfit" placeholder="请输入期末营业利润">
+                </div>
+                <div class="form-group">
+                    <label for="beginningOperatingProfit">期初营业利润（万元）</label>
+                    <input type="number" id="beginningOperatingProfit" placeholder="请输入期初营业利润">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rdExpense">研发费用（万元）</label>
+                    <input type="number" id="rdExpense" placeholder="请输入研发费用">
+                </div>
+                <div class="form-group">
+                    <label for="revenue">营业收入（万元）</label>
+                    <input type="number" id="revenue" placeholder="请输入营业收入">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>行业种类</label>
+                <div class="industry-select">
+                    <button type="button" class="industry-btn" id="industryBtn">请选择行业</button>
+                    <div class="industry-dropdown" id="industryDropdown">
+                        <div class="industry-option" data-value="农林牧渔业">农林牧渔业</div>
+                        <div class="industry-option" data-value="工业">工业</div>
+                        <div class="industry-option" data-value="建筑业">建筑业</div>
+                        <div class="industry-option" data-value="批发业">批发业</div>
+                        <div class="industry-option" data-value="零售业">零售业</div>
+                        <div class="industry-option" data-value="交通运输业">交通运输业</div>
+                        <div class="industry-option" data-value="仓储业">仓储业</div>
+                        <div class="industry-option" data-value="邮政业">邮政业</div>
+                        <div class="industry-option" data-value="住宿业">住宿业</div>
+                        <div class="industry-option" data-value="餐饮业">餐饮业</div>
+                        <div class="industry-option" data-value="信息传输业">信息传输业</div>
+                        <div class="industry-option" data-value="软件和信息技术服务业">软件和信息技术服务业</div>
+                        <div class="industry-option" data-value="房地产开发经营">房地产开发经营</div>
+                        <div class="industry-option" data-value="物业管理">物业管理</div>
+                        <div class="industry-option" data-value="租赁和商务服务业">租赁和商务服务业</div>
+                        <div class="industry-option" data-value="其他行业">其他行业</div>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedIndustry" value="">
+            </div>
+
+            <button type="button" id="analyzeBtn">发展能力分析</button>
+        </section>
+
+        <section class="result-section">
+            <h2>发展能力分析结果</h2>
+            <div class="result-box" id="resultBox">请填写数据并点击“发展能力分析”按钮获取结果</div>
+        </section>
+
+        <section class="formula-section">
+            <h3 class="formula-title">计算公式：</h3>
+            <ul class="formula-list">
+                <li class="formula-item">所有者权益增长率 = （期末所有者权益 - 期初所有者权益）÷ 期初所有者权益 × 100%</li>
+                <li class="formula-item">销售增长率 = （期末销售额 - 期初销售额）÷ 期初销售额 × 100%</li>
+                <li class="formula-item">净利润增长率 = （期末净利润 - 期初净利润）÷ 期初净利润 × 100%</li>
+                <li class="formula-item">营业利润增长率 = （期末营业利润 - 期初营业利润）÷ 期初营业利润 × 100%</li>
+                <li class="formula-item">研发投入强度 = （研发费用 ÷ 营业收入）× 100%</li>
+            </ul>
+        </section>
+
+        <footer>
+            本结果仅供参考，如有疑问，请联系绥芬河市工业信息科技局0453-3962217
+        </footer>
+    </div>
+
+    <script>
+        // 创建浮动元素作为背景装饰
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            const count = 15;
+            
+            for (let i = 0; i < count; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                
+                // 随机大小和位置
+                const size = Math.random() * 100 + 20;
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画
+                const duration = Math.random() * 20 + 10;
+                element.style.animation = `float ${duration}s infinite ease-in-out`;
+                
+                container.appendChild(element);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(90deg); }
+                    50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg); }
+                    75% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(270deg); }
+                    100% { transform: translate(0, 0) rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 行业选择功能
+        function setupIndustrySelection() {
+            const industryBtn = document.getElementById('industryBtn');
+            const industryDropdown = document.getElementById('industryDropdown');
+            const selectedIndustryInput = document.getElementById('selectedIndustry');
+            
+            industryBtn.addEventListener('click', () => {
+                industryDropdown.classList.toggle('show');
+            });
+            
+            const options = document.querySelectorAll('.industry-option');
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    const value = option.getAttribute('data-value');
+                    industryBtn.textContent = value;
+                    selectedIndustryInput.value = value;
+                    industryDropdown.classList.remove('show');
+                });
+            });
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', (event) => {
+                if (!industryBtn.contains(event.target) && !industryDropdown.contains(event.target)) {
+                    industryDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // 计算和分析功能
+        function setupAnalysis() {
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const resultBox = document.getElementById('resultBox');
+            
+            analyzeBtn.addEventListener('click', () => {
+                // 获取输入值
+                const endingEquity = parseFloat(document.getElementById('endingEquity').value) || 0;
+                const beginningEquity = parseFloat(document.getElementById('beginningEquity').value) || 0;
+                const endingSales = parseFloat(document.getElementById('endingSales').value) || 0;
+                const beginningSales = parseFloat(document.getElementById('beginningSales').value) || 0;
+                const endingNetProfit = parseFloat(document.getElementById('endingNetProfit').value) || 0;
+                const beginningNetProfit = parseFloat(document.getElementById('beginningNetProfit').value) || 0;
+                const endingOperatingProfit = parseFloat(document.getElementById('endingOperatingProfit').value) || 0;
+                const beginningOperatingProfit = parseFloat(document.getElementById('beginningOperatingProfit').value) || 0;
+                const rdExpense = parseFloat(document.getElementById('rdExpense').value) || 0;
+                const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+                const industry = document.getElementById('selectedIndustry').value || '未选择';
+                
+                // 验证输入
+                if (industry === '未选择') {
+                    alert('请选择行业种类');
+                    return;
+                }
+                
+                if (beginningEquity === 0 || beginningSales === 0 || beginningNetProfit === 0 || beginningOperatingProfit === 0 || revenue === 0) {
+                    alert('期初数值不能为0，否则无法计算增长率');
+                    return;
+                }
+                
+                // 计算各项指标
+                const equityGrowthRate = ((endingEquity - beginningEquity) / beginningEquity) * 100;
+                const salesGrowthRate = ((endingSales - beginningSales) / beginningSales) * 100;
+                const netProfitGrowthRate = ((endingNetProfit - beginningNetProfit) / beginningNetProfit) * 100;
+                const operatingProfitGrowthRate = ((endingOperatingProfit - beginningOperatingProfit) / beginningOperatingProfit) * 100;
+                const rdIntensity = (rdExpense / revenue) * 100;
+                
+                // 生成分析结果
+                let result = '';
+                result += `企业发展能力分析报告\n`;
+                result += `==================\n\n`;
+                
+                result += `所有者权益增长率: ${equityGrowthRate.toFixed(2)}%\n`;
+                result += `销售增长率: ${salesGrowthRate.toFixed(2)}%\n`;
+                result += `净利润增长率: ${netProfitGrowthRate.toFixed(2)}%\n`;
+                result += `营业利润增长率: ${operatingProfitGrowthRate.toFixed(2)}%\n`;
+                result += `研发投入强度: ${rdIntensity.toFixed(2)}%\n\n`;
+                
+                // 根据行业和指标进行分析
+                result += `分析与评价:\n`;
+                result += `-----------\n`;
+                
+                // 所有者权益增长率分析
+                if (equityGrowthRate > 10) {
+                    result += `• 所有者权益增长率为${equityGrowthRate.toFixed(2)}%，表明企业资本积累能力强，股东权益增长迅速，财务状况良好。\n`;
+                } else if (equityGrowthRate > 0) {
+                    result += `• 所有者权益增长率为${equityGrowthRate.toFixed(2)}%，表明企业有一定的资本积累能力，但增长幅度有限。\n`;
+                } else {
+                    result += `• 所有者权益增长率为${equityGrowthRate.toFixed(2)}%，表明企业股东权益减少，需关注资本保全情况。\n`;
+                }
+                
+                // 销售增长率分析
+                if (salesGrowthRate > 15) {
+                    result += `• 销售增长率为${salesGrowthRate.toFixed(2)}%，市场扩张能力突出，产品或服务需求旺盛。\n`;
+                } else if (salesGrowthRate > 5) {
+                    result += `• 销售增长率为${salesGrowthRate.toFixed(2)}%，市场拓展稳健，业务发展平稳。\n`;
+                } else if (salesGrowthRate > 0) {
+                    result += `• 销售增长率为${salesGrowthRate.toFixed(2)}%，市场增长缓慢，需关注市场策略调整。\n`;
+                } else {
+                    result += `• 销售增长率为${salesGrowthRate.toFixed(2)}%，市场出现萎缩，需尽快采取应对措施。\n`;
+                }
+                
+                // 净利润增长率分析
+                if (netProfitGrowthRate > 20) {
+                    result += `• 净利润增长率为${netProfitGrowthRate.toFixed(2)}%，盈利能力大幅提升，经营效率高。\n`;
+                } else if (netProfitGrowthRate > 5) {
+                    result += `• 净利润增长率为${netProfitGrowthRate.toFixed(2)}%，盈利增长稳定，经营状况良好。\n`;
+                } else if (netProfitGrowthRate > 0) {
+                    result += `• 净利润增长率为${netProfitGrowthRate.toFixed(2)}%，盈利增长缓慢，需优化成本控制。\n`;
+                } else {
+                    result += `• 净利润增长率为${netProfitGrowthRate.toFixed(2)}%，盈利能力下降，需深入分析原因。\n`;
+                }
+                
+                // 营业利润增长率分析
+                if (operatingProfitGrowthRate > 15) {
+                    result += `• 营业利润增长率为${operatingProfitGrowthRate.toFixed(2)}%，主营业务盈利能力强劲。\n`;
+                } else if (operatingProfitGrowthRate > 0) {
+                    result += `• 营业利润增长率为${operatingProfitGrowthRate.toFixed(2)}%，主营业务盈利能力有所提升。\n`;
+                } else {
+                    result += `• 营业利润增长率为${operatingProfitGrowthRate.toFixed(2)}%，主营业务盈利能力下滑。\n`;
+                }
+                
+                // 研发投入强度分析
+                if (rdIntensity > 3) {
+                    result += `• 研发投入强度为${rdIntensity.toFixed(2)}%，表明企业重视技术创新，具备较强的研发实力。\n`;
+                } else if (rdIntensity > 1) {
+                    result += `• 研发投入强度为${rdIntensity.toFixed(2)}%，研发投入适中，可持续性发展有一定保障。\n`;
+                } else {
+                    result += `• 研发投入强度为${rdIntensity.toFixed(2)}%，研发投入偏低，可能影响长期竞争力。\n`;
+                }
+                
+                // 结合行业特点的分析
+                result += `\n综合建议:\n`;
+                result += `---------\n`;
+                
+                switch(industry) {
+                    case '农林牧渔业':
+                        result += `针对农林牧渔行业特点，建议加强农业科技创新，提高农产品附加值，扩大市场渠道，同时注意自然灾害风险防范。\n`;
+                        break;
+                    case '工业':
+                        result += `针对工业行业特点，建议加大技术改造和设备更新力度，提升产品质量和生产效率，增强市场竞争优势。\n`;
+                        break;
+                    case '建筑业':
+                        result += `针对建筑行业特点，建议提升工程管理水平，加强项目成本控制，拓展新兴市场领域，提高资质等级。\n`;
+                        break;
+                    case '批发业':
+                        result += `针对批发行业特点，建议优化供应链管理，扩大供应商网络，提高物流配送效率，增强资金周转能力。\n`;
+                        break;
+                    case '零售业':
+                        result += `针对零售行业特点，建议提升客户体验，优化商品结构，发展线上线下融合模式，提高市场响应速度。\n`;
+                        break;
+                    case '信息传输业':
+                    case '软件和信息技术服务业':
+                        result += `针对信息技术行业特点，建议持续加大研发投入，培养高端技术人才，拓展新业务领域，保持技术领先优势。\n`;
+                        break;
+                    case '房地产开发经营':
+                        result += `针对房地产行业特点，建议优化土地储备结构，提高项目运营效率，加强资金管理，适应市场调控政策。\n`;
+                        break;
+                    default:
+                        result += `根据企业所在行业特点，建议继续加强核心竞争力，优化资源配置，提升管理水平，确保可持续发展。\n`;
+                }
+                
+                result += `\n说明：本分析基于《企业会计准则》、《企业财务通则》等相关法规，结合行业发展特点进行综合评估。`;
+                
+                // 显示结果
+                resultBox.textContent = result;
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            createFloatingElements();
+            setupIndustrySelection();
+            setupAnalysis();
+        });
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>高新技术企业-自我测评器</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      color: #f0f9ff;
+      background: radial-gradient(circle at top, rgba(11,27,56,.9), #02070f 45%);
+      overflow-x: hidden;
+    }
+    .page {
+      min-height: 100vh;
+      padding: 30px 24px 60px;
+      position: relative;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      margin: 0 auto;
+      display: inline-block;
+      padding: 18px 28px;
+      border: 1px solid rgba(79, 202, 255, 0.35);
+      border-radius: 999px;
+      font-size: clamp(24px, 4vw, 42px);
+      letter-spacing: 0.18em;
+      background: rgba(4, 20, 45, 0.75);
+      box-shadow: 0 0 30px rgba(41, 193, 255, 0.18);
+    }
+    .panel {
+      background: rgba(5, 19, 44, 0.9);
+      border: 1px solid rgba(80, 215, 255, 0.12);
+      border-radius: 22px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: -30px;
+      right: -120px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 1px dashed rgba(45, 220, 255, 0.18);
+    }
+    .panel h2 {
+      margin: 0 0 18px;
+      color: #b5f8ff;
+      font-size: 1.45rem;
+      letter-spacing: .04em;
+      border-bottom: 1px solid rgba(95, 207, 255,0.2);
+      padding-bottom: 12px;
+    }
+    .panel p {
+      margin: 0 0 18px;
+      line-height: 1.8;
+      color: #c9e8ff;
+    }
+    .question {
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: rgba(12, 36, 72, 0.8);
+      border: 1px solid rgba(92, 206, 255, 0.12);
+    }
+    .question-title {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: #e7f8ff;
+    }
+    .options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .option {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 90px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(112, 189, 243, 0.22);
+      background: rgba(6, 21, 46, 0.8);
+      color: #b8d8ff;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .option:hover { transform: translateY(-1px); }
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .option.selected {
+      color: #ff7c7c;
+      border-color: rgba(255, 124, 124, 0.9);
+      background: rgba(255, 124, 124, 0.12);
+      box-shadow: inset 0 0 12px rgba(255, 124, 124, 0.18);
+    }
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .score-row label {
+      color: #d5ecff;
+      font-size: .98rem;
+    }
+    .score-row input[type="number"] {
+      width: 100%;
+      min-width: 120px;
+      padding: 10px 12px;
+      border: 1px solid rgba(95, 193, 255, 0.22);
+      border-radius: 12px;
+      background: rgba(3, 12, 28, 0.9);
+      color: #f3fbff;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .score-row input[type="number"]:focus {
+      border-color: rgba(64, 189, 255, 0.9);
+      box-shadow: 0 0 0 4px rgba(34, 151, 255, 0.12);
+    }
+    .hint {
+      margin-top: 4px;
+      color: #94d4ff;
+      font-size: 0.88rem;
+    }
+    .result-area {
+      margin-top: 24px;
+      padding: 20px 22px;
+      border-radius: 18px;
+      background: rgba(2, 16, 34, 0.95);
+      border: 1px solid rgba(94, 210, 255, 0.16);
+      min-height: 120px;
+    }
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 24px;
+      border-radius: 999px;
+      color: #071d38;
+      font-weight: 700;
+      letter-spacing: .05em;
+      background: linear-gradient(135deg, #66e2ff 0%, #0f7dff 100%);
+      box-shadow: 0 18px 35px rgba(24, 144, 255, 0.26);
+      transition: transform .2s ease, box-shadow .2s ease;
+      margin-top: 16px;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 22px 42px rgba(24, 144, 255, 0.32); }
+    .output-title {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      color: #c5f5ff;
+    }
+    .message {
+      margin: 0;
+      color: #dbefff;
+      line-height: 1.8;
+    }
+    .message strong {
+      color: #fff;
+    }
+    .message .success {
+      color: #9df2a2;
+    }
+    .message .warn {
+      color: #ffb37a;
+    }
+    .background-circuit {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20% 15%, rgba(15, 172, 255, .13), transparent 50%),
+        radial-gradient(circle at 80% 10%, rgba(86, 194, 255, .12), transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(32, 102, 255, .14), transparent 35%);
+      opacity: .8;
+    }
+    .background-circuit::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: 90px 90px;
+      opacity: 0.45;
+      mix-blend-mode: screen;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: #9cc9ff;
+      line-height: 1.65;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.92rem;
+      color: rgba(173, 210, 255, 0.72);
+    }
+    @media (max-width: 760px) {
+      .score-row { grid-template-columns: 1fr; }
+      .panel { padding: 20px 18px; }
+      .hero { padding: 0 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="background-circuit"></div>
+    <section class="hero">
+      <h1>高新技术企业-自我测评器</h1>
+    </section>
+
+    <section class="panel" id="basic-section">
+      <h2>基本情况</h2>
+      <p>请根据企业实际情况逐项选择“是/否”。所有7项均选择“是”才视为基本条件满足。</p>
+
+      <div class="question">
+        <div class="question-title">（一）企业注册时间：在中国境内注册的企业，注册成立一年以上。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic1" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic1" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（二）核心知识产权：拥有主要产品（服务）在技术上发挥核心支持作用的知识产权所有权（如专利、软著等）。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic2" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic2" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（三）技术领域：产品（服务）属于《国家重点支持的高新技术领域》范围。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic3" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic3" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（四）科技人员比例：企业从事研发和相关技术创新活动的科技人员占当年职工总数的比例不低于10%。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic4" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic4" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（五）近一年销售收入小于5,000万元的企业：研发费用占销售收入比例不低于5%。近一年销售收入在5,000万元至2亿元的企业：比例不低于4%。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic5" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic5" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（六）高新技术产品收入：近一年高新技术产品（服务）收入占企业同期总收入的比例不低于60%。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic6" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic6" value="no">否</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">（七）合规经营：申请认定前一年内未发生重大安全、质量事故或严重环境违法行为。</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="basic7" value="yes">是</label>
+          <label class="option"><input type="radio" name="basic7" value="no">否</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="innovation-section">
+      <h2>创新能力</h2>
+      <p>（八）创新能力评价。满分100分，得分&gt;70分即为通过。请在每个“自评得分”框内输入实际分值。</p>
+
+      <div class="question">
+        <div class="question-title">1、知识产权（30分，5小项）</div>
+        <div class="score-row">
+          <label>（1）技术先进程度（8分）<span class="hint">A.7-8分 B.5-6分 C.3-4分 D.1-2分 E.0分</span></label>
+          <input type="number" min="0" max="8" step="0.1" id="score1" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（2）主营产品核心支撑作用（8分）<span class="hint">A.7-8分 B.5-6分 C.3-4分 D.1-2分 E.0</span></label>
+          <input type="number" min="0" max="8" step="0.1" id="score2" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（3）知识产权数量（8分）<span class="hint">A.7-8分：≥1项Ⅰ类；B.5-6分：≥5项Ⅱ类；C.3-4分：3-4项Ⅱ类；D.1-2分：1-2项Ⅱ类；E.0分</span></label>
+          <input type="number" min="0" max="8" step="0.1" id="score3" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（4）获取方式（6分）<span class="hint">自主研发4-6分；受让/并购等外购1-3分；无0分</span></label>
+          <input type="number" min="0" max="6" step="0.1" id="score4" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（5）加分项（最多+2分）<span class="hint">牵头/参与国标、行标编制，超额总分不超30。</span></label>
+          <input type="number" min="0" max="2" step="0.1" id="score5" placeholder="自评得分" />
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">2、科技成果转化能力（30分，按近3年年均转化数量分6档）</div>
+        <div class="score-row">
+          <label>转化形式：新产品/新工艺、样机、技术转让、技术许可、作价入股等。<span class="hint">A 25~30分：年均≥5项；B 19~24分：年均≥4项；C 13~18分：年均≥3项；D 7~12分：年均≥2项；E 1~6分：年均≥1项；F 0分：无转化。</span></label>
+          <input type="number" min="0" max="30" step="0.1" id="score6" placeholder="自评得分" />
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">3、研发组织管理水平（20分，4小项）</div>
+        <div class="score-row">
+          <label>（1）研发制度+研发辅助账、研发投入核算（6分）<span class="hint">制度完善3-6分，不完善1-3分。</span></label>
+          <input type="number" min="0" max="6" step="0.1" id="score7" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（2）内设研发机构+产学研合作（6分）<span class="hint">有机构+实质合作3-6分。</span></label>
+          <input type="number" min="0" max="6" step="0.1" id="score8" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（3）成果转化激励制度+创新平台（4分）<span class="hint">制度落地、有平台3-4分。</span></label>
+          <input type="number" min="0" max="4" step="0.1" id="score9" placeholder="自评得分" />
+        </div>
+        <div class="score-row">
+          <label>（4）人才引进、培训、绩效制度（4分）<span class="hint">制度齐全、有落地凭证3-4分。</span></label>
+          <input type="number" min="0" max="4" step="0.1" id="score10" placeholder="自评得分" />
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-title">4、企业成长性（20分：净资产10分+营收10分，各单独打分）</div>
+        <div class="score-row">
+          <label>净资产增长率及营收增长率计算公式（取近3年财报）：增长率=0.5×（第2年/第1年+第3年/第2年）−1。<span class="hint">≥35%：9-10分；≥25%：7-8分；≥15%：5-6分；≥5%：3-4分；＞0：1-2分；≤0：0分。</span></label>
+          <input type="number" min="0" max="20" step="0.1" id="score11" placeholder="自评得分" />
+        </div>
+      </div>
+    </section>
+
+    <button class="btn" id="checkBtn">点击查看结果</button>
+    <div class="result-area" id="resultArea">
+      <div class="output-title">测评结果</div>
+      <p class="message">请完成以上选项后，点击“点击查看结果”获取自评结论。</p>
+    </div>
+    <div class="footer">本页面仅供自评参考，官方认定以绥芬河市工业信息科技局审核为准。</div>
+  </div>
+
+  <script>
+    const optionLabels = document.querySelectorAll('.option');
+    optionLabels.forEach(label => {
+      const input = label.querySelector('input');
+      input.addEventListener('change', () => {
+        const group = input.name;
+        document.querySelectorAll(`input[name="${group}"]`).forEach(other => {
+          other.parentElement.classList.remove('selected');
+        });
+        if (input.checked) label.classList.add('selected');
+      });
+    });
+
+    const scoreIds = [
+      'score1','score2','score3','score4','score5',
+      'score6','score7','score8','score9','score10','score11'
+    ];
+
+    function parseScore(id) {
+      const value = document.getElementById(id).value.trim();
+      const num = parseFloat(value);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const basicPassed = [1,2,3,4,5,6,7].every(i => {
+        const selected = document.querySelector(`input[name="basic${i}"]:checked`);
+        return selected && selected.value === 'yes';
+      });
+      const scores = scoreIds.map(parseScore);
+      const totalScore = scores.reduce((sum, v) => sum + v, 0);
+      const resultArea = document.getElementById('resultArea');
+      const messages = [];
+      let messageHtml = '';
+
+      if (!basicPassed) {
+        messages.push('基本情况条件未全部满足，请检查是否所有7项均选择“是”。');
+      }
+      if (totalScore <= 70) {
+        messages.push(`创新能力总分 ${totalScore.toFixed(1)} 分，未达到70分以上的及格线。`);
+      }
+
+      if (messages.length === 0) {
+        messageHtml = `
+          <p class="message success"><strong>恭喜您，您的得分为：${totalScore.toFixed(1)}，您有可能成为高新技术企业，请联系绥芬河市工业信息科技局进行官方认定。</strong></p>
+          <p class="message">本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局0453-3962217。</p>
+        `;
+      } else {
+        messageHtml = `<p class="message warn"><strong>目前评估结果显示您尚未满足高新技术企业自评要求：</strong></p>`;
+        messages.forEach(msg => {
+          messageHtml += `<p class="message">• ${msg}</p>`;
+        });
+        messageHtml += `
+          <p class="message">建议根据《高新技术企业认定管理办法》重点提升以下方面：</p>
+          <p class="message">1. 核查基础条件，确保注册时间、知识产权、技术领域、研发人员比例、研发费用比例、高新技术产品收入、合规经营等7项均满足要求。</p>
+          <p class="message">2. 提高创新能力得分，可优化专利类型和技术先进程度，加强成果转化、研发管理制度建设，并完善财务成长性指标。</p>
+          <p class="message">3. 完成自评后，可咨询绥芬河市工业信息科技局进行更详细的认定辅导。</p>
+        `;
+      }
+
+      resultArea.innerHTML = `<div class="output-title">测评结果</div>${messageHtml}`;
+    });
+  </script>
+  <script src="../assets/site-footer.js"></script>
+</body>
+</html>

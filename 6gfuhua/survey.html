@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国家级科技企业孵化器-自我测评器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+            letter-spacing: 2px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4fc3f7;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #4fc3f7;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .option {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+
+        .option:hover {
+            background: rgba(79, 195, 247, 0.3);
+        }
+
+        .option.selected {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff5252;
+            text-shadow: 0 0 8px rgba(255, 82, 82, 0.5);
+        }
+
+        .result-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .result-btn {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .result-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+        }
+
+        .result-output {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .financial-element {
+            position: absolute;
+            opacity: 0.05;
+            font-size: 24px;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景 -->
+    <div class="background" id="particles"></div>
+    
+    <div class="container">
+        <header>
+            <h1>国家级科技企业孵化器-自我测评器</h1>
+        </header>
+        
+        <main>
+            <!-- 基础条件板块 -->
+            <section class="section">
+                <h2 class="section-title">基础条件</h2>
+                
+                <div class="question">
+                    <p class="question-text">1. 注册与运营：具有独立法人资格，实际注册并运营满3年。已在省级科技管理部门备案并至少连续2年报送统计数据。</p>
+                    <div class="options">
+                        <div class="option" data-question="basic-1" data-value="yes">是</div>
+                        <div class="option" data-question="basic-1" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">2. 孵化场地：自主支配的孵化场地面积不低于10,000平方米（专业类孵化器不低于5,000平方米）。在孵企业使用场地面积占75%以上。</p>
+                    <div class="options">
+                        <div class="option" data-question="basic-2" data-value="yes">是</div>
+                        <div class="option" data-question="basic-2" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">3. 团队建设：专职孵化服务人员占比80%以上，每10家在孵企业至少配备1名专职人员。团队需具备创业、投融资、企业管理等经验。</p>
+                    <div class="options">
+                        <div class="option" data-question="basic-3" data-value="yes">是</div>
+                        <div class="option" data-question="basic-3" data-value="no">否</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 在孵企业要求板块 -->
+            <section class="section">
+                <h2 class="section-title">在孵企业要求</h2>
+                
+                <div class="question">
+                    <p class="question-text">1. 企业数量：在孵企业不少于50家（专业类孵化器不低于30家）。</p>
+                    <div class="options">
+                        <div class="option" data-question="incubated-1" data-value="yes">是</div>
+                        <div class="option" data-question="incubated-1" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">2. 企业性质：以科技型创业企业为主，主要从事新技术、新产品研发。</p>
+                    <div class="options">
+                        <div class="option" data-question="incubated-2" data-value="yes">是</div>
+                        <div class="option" data-question="incubated-2" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">3. 孵化时限：企业入驻时成立时间一般不超过24个月。孵化时限原则上不超过48个月（技术领域为生物医药、现代农业、集成电路的企业可适当延长）。</p>
+                    <div class="options">
+                        <div class="option" data-question="incubated-3" data-value="yes">是</div>
+                        <div class="option" data-question="incubated-3" data-value="no">否</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 孵化绩效板块 -->
+            <section class="section">
+                <h2 class="section-title">孵化绩效</h2>
+                
+                <div class="question">
+                    <p class="question-text">1. 毕业企业数量：累计毕业企业不少于25家（专业类孵化器不低于15家）。</p>
+                    <div class="options">
+                        <div class="option" data-question="performance-1" data-value="yes">是</div>
+                        <div class="option" data-question="performance-1" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">2. 毕业企业标准（符合以下至少一项）：①经国家备案通过的高新技术企业；②连续2年营业收入累计超过1,000万元；③被兼并、收购或在国内外资本市场上市。</p>
+                    <div class="options">
+                        <div class="option" data-question="performance-2" data-value="yes">是</div>
+                        <div class="option" data-question="performance-2" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">3. 知识产权：在孵企业中拥有有效知识产权的比例不低于30%。</p>
+                    <div class="options">
+                        <div class="option" data-question="performance-3" data-value="yes">是</div>
+                        <div class="option" data-question="performance-3" data-value="no">否</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">4. 就业带动：在孵企业从业人数超过500人（专业类孵化器不低于300人）。</p>
+                    <div class="options">
+                        <div class="option" data-question="performance-4" data-value="yes">是</div>
+                        <div class="option" data-question="performance-4" data-value="no">否</div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="result-container">
+                <button class="result-btn" id="getResult">点击查看结果</button>
+                <div class="result-output" id="resultOutput">
+                    请先完成所有题目后再点击结果
+                </div>
+                <div class="contact-info">
+                    本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局0453-3962217
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建动态背景粒子
+            createParticles();
+            
+            // 为选项添加点击事件
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    const value = this.getAttribute('data-value');
+                    
+                    // 清除当前问题的所有选项的选中状态
+                    document.querySelectorAll(`[data-question="${question}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 添加选中状态
+                    this.classList.add('selected');
+                    this.style.color = value === 'yes' ? '#4CAF50' : '#F44336';
+                });
+            });
+            
+            // 查看结果按钮事件
+            document.getElementById('getResult').addEventListener('click', function() {
+                const answers = {
+                    basic: [],
+                    incubated: [],
+                    performance: []
+                };
+                
+                // 收集基础条件答案
+                for (let i = 1; i <= 3; i++) {
+                    const selected = document.querySelector(`[data-question="basic-${i}"].selected`);
+                    if (selected) {
+                        answers.basic.push(selected.getAttribute('data-value'));
+                    } else {
+                        alert(`请完成基础条件第${i}题`);
+                        return;
+                    }
+                }
+                
+                // 收集在孵企业要求答案
+                for (let i = 1; i <= 3; i++) {
+                    const selected = document.querySelector(`[data-question="incubated-${i}"].selected`);
+                    if (selected) {
+                        answers.incubated.push(selected.getAttribute('data-value'));
+                    } else {
+                        alert(`请完成在孵企业要求第${i}题`);
+                        return;
+                    }
+                }
+                
+                // 收集孵化绩效答案
+                for (let i = 1; i <= 4; i++) {
+                    const selected = document.querySelector(`[data-question="performance-${i}"].selected`);
+                    if (selected) {
+                        answers.performance.push(selected.getAttribute('data-value'));
+                    } else {
+                        alert(`请完成孵化绩效第${i}题`);
+                        return;
+                    }
+                }
+                
+                // 检查是否所有答案都是"是"
+                const allYes = [...answers.basic, ...answers.incubated, ...answers.performance].every(answer => answer === 'yes');
+                
+                // 显示结果
+                const resultOutput = document.getElementById('resultOutput');
+                if (allYes) {
+                    resultOutput.innerHTML = '恭喜您，您有可能成为国家级科技型企业孵化器，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策';
+                    resultOutput.style.color = '#4CAF50';
+                } else {
+                    resultOutput.innerHTML = '您有可能还不是国家级科技型企业孵化器，请继续努力，如需专业指导，请联系绥芬河市工业信息科技局';
+                    resultOutput.style.color = '#FFC107';
+                }
+            });
+            
+            // 创建动态背景粒子
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 30;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // 随机大小
+                    const size = Math.random() * 100 + 20;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // 随机位置
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    
+                    // 随机动画延迟
+                    particle.style.animationDelay = `${Math.random() * 15}s`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+                
+                // 添加财务元素符号
+                const financialSymbols = ['%', '$', '€', '¥', '¢', '£', '฿', 'Ξ', 'Π'];
+                for (let i = 0; i < 20; i++) {
+                    const symbol = document.createElement('div');
+                    symbol.classList.add('financial-element');
+                    symbol.textContent = financialSymbols[Math.floor(Math.random() * financialSymbols.length)];
+                    
+                    // 随机位置和旋转
+                    symbol.style.left = `${Math.random() * 100}%`;
+                    symbol.style.top = `${Math.random() * 100}%`;
+                    symbol.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    // 随机大小和透明度
+                    symbol.style.fontSize = `${Math.random() * 40 + 10}px`;
+                    symbol.style.opacity = `${Math.random() * 0.1}`;
+                    
+                    document.body.appendChild(symbol);
+                }
+            }
+        });
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

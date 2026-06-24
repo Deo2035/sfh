@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业财务情况分析-偿债能力</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+            color: #4fc3f7;
+            letter-spacing: 2px;
+        }
+
+        .input-section {
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-group {
+            flex: 1 0 300px;
+            padding: 10px;
+            min-width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #2a4d69;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+            background: linear-gradient(45deg, #00b4e6, #0066cc);
+        }
+
+        .result-section {
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .formula-display {
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .formula-title {
+            color: #4fc3f7;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .formula-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .formula-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.2);
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-list li:last-child {
+            border-bottom: none;
+        }
+
+        #result {
+            background: rgba(0, 20, 40, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+            white-space: pre-line;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .industry-dropdown {
+            position: absolute;
+            background: rgba(0, 30, 60, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            min-width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .industry-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .industry-item:hover {
+            background: rgba(79, 195, 247, 0.2);
+        }
+
+        .finance-icon {
+            position: absolute;
+            opacity: 0.05;
+            font-size: 80px;
+            z-index: -1;
+        }
+
+        .icon-1 { top: 10%; left: 5%; transform: rotate(30deg); }
+        .icon-2 { top: 20%; right: 5%; transform: rotate(-15deg); }
+        .icon-3 { bottom: 15%; left: 10%; transform: rotate(15deg); }
+        .icon-4 { bottom: 25%; right: 15%; transform: rotate(-30deg); }
+
+        @media (max-width: 768px) {
+            .form-group {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 财务元素图标 -->
+    <div class="finance-icon icon-1">📊</div>
+    <div class="finance-icon icon-2">💰</div>
+    <div class="finance-icon icon-3">📈</div>
+    <div class="finance-icon icon-4">📉</div>
+
+    <div class="container">
+        <h1>企业财务情况分析-偿债能力</h1>
+
+        <div class="input-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="currentAssets">流动资产（万元）</label>
+                    <input type="number" id="currentAssets" placeholder="请输入流动资产">
+                </div>
+                <div class="form-group">
+                    <label for="currentLiabilities">流动负债（万元）</label>
+                    <input type="number" id="currentLiabilities" placeholder="请输入流动负债">
+                </div>
+                <div class="form-group">
+                    <label for="totalAssets">资产总额（万元）</label>
+                    <input type="number" id="totalAssets" placeholder="请输入资产总额">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="totalLiabilities">负债总额（万元）</label>
+                    <input type="number" id="totalLiabilities" placeholder="请输入负债总额">
+                </div>
+                <div class="form-group">
+                    <label for="inventory">存货（万元）</label>
+                    <input type="number" id="inventory" placeholder="请输入存货">
+                </div>
+                <div class="form-group">
+                    <label for="cash">货币资金（万元）</label>
+                    <input type="number" id="cash" placeholder="请输入货币资金">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="financialAssets">交易性金融资产（万元）</label>
+                    <input type="number" id="financialAssets" placeholder="请输入交易性金融资产">
+                </div>
+                <div class="form-group">
+                    <label for="operatingCashFlow">经营活动现金流量（万元）</label>
+                    <input type="number" id="operatingCashFlow" placeholder="请输入经营活动现金流量">
+                </div>
+                <div class="form-group">
+                    <label for="netProfit">净利润（万元）</label>
+                    <input type="number" id="netProfit" placeholder="请输入净利润">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="interestExpense">利息费用（万元）</label>
+                    <input type="number" id="interestExpense" placeholder="请输入利息费用">
+                </div>
+                <div class="form-group">
+                    <label for="taxExpense">所得税费用（万元）</label>
+                    <input type="number" id="taxExpense" placeholder="请输入所得税费用">
+                </div>
+                <div class="form-group">
+                    <label for="debtTotal">债务总额（万元）</label>
+                    <input type="number" id="debtTotal" placeholder="请输入债务总额">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="industryType">行业种类</label>
+                    <input type="text" id="industryType" placeholder="点击选择行业" readonly onclick="showIndustryDropdown()">
+                </div>
+            </div>
+            <button onclick="calculateDebtCapacity()">偿债能力分析</button>
+        </div>
+
+        <div class="result-section">
+            <h2>分析结果</h2>
+            <div id="result"></div>
+        </div>
+
+        <div class="formula-display">
+            <h3 class="formula-title">计算公式</h3>
+            <ul class="formula-list">
+                <li>流动比率 = 流动资产 ÷ 流动负债</li>
+                <li>速动比率 = （流动资产 - 存货）÷ 流动负债</li>
+                <li>现金比率 = (货币资金 + 交易性金融资产) ÷ 流动负债</li>
+                <li>资产负债率 = （负债总额 ÷ 资产总额）× 100%</li>
+                <li>权益乘数 = 资产总额 ÷ （资产总额 - 负债总额）</li>
+                <li>利息保障倍数 = （净利润 + 利息费用 + 所得税费用）÷ 利息费用</li>
+                <li>产权比率 = 负债总额 ÷ （资产总额 - 负债总额）</li>
+                <li>现金流量比率 = 经营活动现金流量 ÷ 流动负债</li>
+                <li>净运营资本 = 流动资产 - 流动负债</li>
+                <li>现金流量利息保障倍数 = 经营活动现金流量 ÷ 利息费用</li>
+                <li>经营现金流量债务比 = （经营活动现金流量 ÷ 债务总额）× 100%</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 行业选择下拉框 -->
+    <div class="industry-dropdown" id="industryDropdown">
+        <div class="industry-item" onclick="selectIndustry('农林牧渔业')">农林牧渔业</div>
+        <div class="industry-item" onclick="selectIndustry('工业')">工业</div>
+        <div class="industry-item" onclick="selectIndustry('建筑业')">建筑业</div>
+        <div class="industry-item" onclick="selectIndustry('批发业')">批发业</div>
+        <div class="industry-item" onclick="selectIndustry('零售业')">零售业</div>
+        <div class="industry-item" onclick="selectIndustry('交通运输业')">交通运输业</div>
+        <div class="industry-item" onclick="selectIndustry('仓储业')">仓储业</div>
+        <div class="industry-item" onclick="selectIndustry('邮政业')">邮政业</div>
+        <div class="industry-item" onclick="selectIndustry('住宿业')">住宿业</div>
+        <div class="industry-item" onclick="selectIndustry('餐饮业')">餐饮业</div>
+        <div class="industry-item" onclick="selectIndustry('信息传输业')">信息传输业</div>
+        <div class="industry-item" onclick="selectIndustry('软件和信息技术服务业')">软件和信息技术服务业</div>
+        <div class="industry-item" onclick="selectIndustry('房地产开发经营')">房地产开发经营</div>
+        <div class="industry-item" onclick="selectIndustry('物业管理')">物业管理</div>
+        <div class="industry-item" onclick="selectIndustry('租赁和商务服务业')">租赁和商务服务业</div>
+        <div class="industry-item" onclick="selectIndustry('其他行业')">其他行业</div>
+    </div>
+
+    <script>
+        // 显示行业选择下拉框
+        function showIndustryDropdown() {
+            const dropdown = document.getElementById('industryDropdown');
+            const industryInput = document.getElementById('industryType');
+            
+            // 定位下拉框到输入框下方
+            const rect = industryInput.getBoundingClientRect();
+            dropdown.style.top = rect.bottom + window.scrollY + 'px';
+            dropdown.style.left = rect.left + window.scrollX + 'px';
+            dropdown.style.display = 'block';
+        }
+
+        // 选择行业
+        function selectIndustry(industry) {
+            document.getElementById('industryType').value = industry;
+            document.getElementById('industryDropdown').style.display = 'none';
+        }
+
+        // 点击页面其他地方隐藏下拉框
+        document.addEventListener('click', function(event) {
+            const industryInput = document.getElementById('industryType');
+            const dropdown = document.getElementById('industryDropdown');
+            
+            if (event.target !== industryInput && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 计算偿债能力
+        function calculateDebtCapacity() {
+            // 获取输入值
+            const currentAssets = parseFloat(document.getElementById('currentAssets').value) || 0;
+            const currentLiabilities = parseFloat(document.getElementById('currentLiabilities').value) || 0;
+            const totalAssets = parseFloat(document.getElementById('totalAssets').value) || 0;
+            const totalLiabilities = parseFloat(document.getElementById('totalLiabilities').value) || 0;
+            const inventory = parseFloat(document.getElementById('inventory').value) || 0;
+            const cash = parseFloat(document.getElementById('cash').value) || 0;
+            const financialAssets = parseFloat(document.getElementById('financialAssets').value) || 0;
+            const operatingCashFlow = parseFloat(document.getElementById('operatingCashFlow').value) || 0;
+            const netProfit = parseFloat(document.getElementById('netProfit').value) || 0;
+            const interestExpense = parseFloat(document.getElementById('interestExpense').value) || 0;
+            const taxExpense = parseFloat(document.getElementById('taxExpense').value) || 0;
+            const debtTotal = parseFloat(document.getElementById('debtTotal').value) || 0;
+            const industryType = document.getElementById('industryType').value;
+
+            // 验证必要输入
+            if (!industryType) {
+                alert('请选择行业种类');
+                return;
+            }
+
+            // 避免除零错误
+            if (currentLiabilities === 0) {
+                alert('流动负债不能为0');
+                return;
+            }
+            
+            if (totalAssets === 0) {
+                alert('资产总额不能为0');
+                return;
+            }
+            
+            if (interestExpense === 0) {
+                alert('利息费用不能为0');
+                return;
+            }
+            
+            if (debtTotal === 0) {
+                alert('债务总额不能为0');
+                return;
+            }
+
+            // 计算各项指标
+            const currentRatio = currentAssets / currentLiabilities;
+            const quickRatio = (currentAssets - inventory) / currentLiabilities;
+            const cashRatio = (cash + financialAssets) / currentLiabilities;
+            const debtToAssetRatio = (totalLiabilities / totalAssets) * 100;
+            const equityMultiplier = totalAssets / (totalAssets - totalLiabilities);
+            const interestCoverage = (netProfit + interestExpense + taxExpense) / interestExpense;
+            const debtToEquityRatio = totalLiabilities / (totalAssets - totalLiabilities);
+            const cashFlowRatio = operatingCashFlow / currentLiabilities;
+            const netWorkingCapital = currentAssets - currentLiabilities;
+            const cashFlowInterestCoverage = operatingCashFlow / interestExpense;
+            const cashFlowDebtRatio = (operatingCashFlow / debtTotal) * 100;
+
+            // 生成分析结果
+            let result = `偿债能力分析结果：
+
+流动比率：${currentRatio.toFixed(2)}
+速动比率：${quickRatio.toFixed(2)}
+现金比率：${cashRatio.toFixed(2)}
+资产负债率：${debtToAssetRatio.toFixed(2)}%
+权益乘数：${equityMultiplier.toFixed(2)}
+利息保障倍数：${interestCoverage.toFixed(2)}
+产权比率：${debtToEquityRatio.toFixed(2)}
+现金流量比率：${cashFlowRatio.toFixed(2)}
+净运营资本：${netWorkingCapital.toFixed(2)}万元
+现金流量利息保障倍数：${cashFlowInterestCoverage.toFixed(2)}
+经营现金流量债务比：${cashFlowDebtRatio.toFixed(2)}%
+
+`;
+
+            // 根据行业类型进行分析
+            let industryAnalysis = '';
+            switch(industryType) {
+                case '农林牧渔业':
+                    industryAnalysis = `根据农林牧渔行业的特点，该行业季节性较强，流动比率在1.5-2.0之间较为适宜，当前值${currentRatio.toFixed(2)}表明企业短期偿债能力${currentRatio >= 1.5 && currentRatio <= 2.0 ? '良好' : currentRatio > 2.0 ? '较强' : '偏弱'}。`;
+                    break;
+                case '工业':
+                    industryAnalysis = `工业企业的流动比率一般在1.5-2.0之间较为合适，当前值${currentRatio.toFixed(2)}表明企业短期偿债能力${currentRatio >= 1.5 && currentRatio <= 2.0 ? '良好' : currentRatio > 2.0 ? '较强' : '偏弱'}。资产负债率${debtToAssetRatio.toFixed(2)}%在工业行业中属于${debtToAssetRatio < 40 ? '偏低' : debtToAssetRatio < 60 ? '适中' : '偏高'}水平。`;
+                    break;
+                case '建筑业':
+                    industryAnalysis = `建筑行业通常具有较高的负债率，资产负债率${debtToAssetRatio.toFixed(2)}%在该行业中属于${debtToAssetRatio < 50 ? '偏低' : debtToAssetRatio < 70 ? '适中' : '偏高'}。利息保障倍数${interestCoverage.toFixed(2)}倍表明企业有足够的利润覆盖利息支出。`;
+                    break;
+                case '房地产开发经营':
+                    industryAnalysis = `房地产行业资产负债率普遍较高，当前${debtToAssetRatio.toFixed(2)}%处于行业中等水平。现金流量比率${cashFlowRatio.toFixed(2)}反映了企业通过经营活动现金流偿还短期债务的能力。`;
+                    break;
+                default:
+                    industryAnalysis = `根据${industryType}行业的一般标准，该企业的流动比率${currentRatio.toFixed(2)}表明短期偿债能力${currentRatio >= 1.5 ? '较好' : '需要关注'}。资产负债率${debtToAssetRatio.toFixed(2)}%反映了企业的杠杆水平。`;
+            }
+
+            // 添加分析和建议
+            result += `分析与评价：
+${industryAnalysis}
+
+综合评价：
+- 短期偿债能力：流动比率${currentRatio.toFixed(2)}，速动比率${quickRatio.toFixed(2)}，现金比率${cashRatio.toFixed(2)}，表明企业短期内偿还流动负债的能力${currentRatio > 1.5 && quickRatio > 1.0 ? '较强' : '一般或偏弱'}。
+- 长期偿债能力：资产负债率${debtToAssetRatio.toFixed(2)}%，产权比率${debtToEquityRatio.toFixed(2)}，利息保障倍数${interestCoverage.toFixed(2)}倍，表明企业长期偿债风险${debtToAssetRatio < 50 ? '较低' : debtToAssetRatio < 70 ? '适中' : '较高'}。
+- 现金流量状况：现金流量比率${cashFlowRatio.toFixed(2)}，经营现金流量债务比${cashFlowDebtRatio.toFixed(2)}%，表明企业现金流对债务的保障程度${cashFlowRatio > 0.5 ? '较好' : '有待提升'}。
+
+建议：
+1. 如短期偿债能力不足，应加强应收账款管理，提高资产流动性；
+2. 如长期偿债压力较大，应优化资本结构，适当控制负债规模；
+3. 加强经营活动现金流管理，确保有足够的现金流支持企业运营及债务偿还；
+4. 根据行业特点制定合适的财务策略，控制财务风险。
+
+本结果仅供参考，如有疑问，请联系绥芬河市工业信息科技局0453-3962217`;
+            
+            // 显示结果
+            document.getElementById('result').innerText = result;
+        }
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

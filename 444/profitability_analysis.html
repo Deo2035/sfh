@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业财务情况分析-盈利质量分析</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-1000px) translateX(1000px) rotate(720deg);
+            }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .input-section {
+            background: rgba(0, 30, 60, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 100, 200, 0.3);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        label {
+            min-width: 220px;
+            font-size: 1.1em;
+            margin-right: 15px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="number"], select {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00f2fe;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        #industrySelect {
+            cursor: pointer;
+            position: relative;
+        }
+
+        #industrySelect::after {
+            content: '▼';
+            font-size: 0.7em;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6);
+        }
+
+        .result-section {
+            background: rgba(0, 30, 60, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 100, 200, 0.3);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #result {
+            min-height: 150px;
+            padding: 20px;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            white-space: pre-line;
+        }
+
+        .formula-section {
+            background: rgba(0, 30, 60, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 100, 200, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-title {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #00f2fe;
+            text-align: center;
+        }
+
+        .formula-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .formula-content {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 20, 40, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        /* 行业选择下拉菜单样式 */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 30, 60, 0.95);
+            min-width: 250px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+            z-index: 100;
+            border-radius: 8px;
+            margin-top: 5px;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(0, 100, 200, 0.5);
+        }
+
+        .show {display: block;}
+        
+        @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            label {
+                min-width: auto;
+                margin-bottom: 8px;
+                text-align: left;
+            }
+            
+            input[type="number"], select {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景 -->
+    <div class="background-container" id="background"></div>
+
+    <div class="container">
+        <header>
+            <h1>企业财务情况分析-盈利质量分析</h1>
+        </header>
+
+        <section class="input-section">
+            <div class="form-group">
+                <label for="cashFlow">经营活动现金流量净额（万元）：</label>
+                <input type="number" id="cashFlow" placeholder="请输入经营活动现金流量净额">
+            </div>
+
+            <div class="form-group">
+                <label for="initialAssets">期初资产总额（万元）：</label>
+                <input type="number" id="initialAssets" placeholder="请输入期初资产总额">
+            </div>
+
+            <div class="form-group">
+                <label for="finalAssets">期末资产总额（万元）：</label>
+                <input type="number" id="finalAssets" placeholder="请输入期末资产总额">
+            </div>
+
+            <div class="form-group">
+                <label for="netProfit">净利润（万元）：</label>
+                <input type="number" id="netProfit" placeholder="请输入净利润">
+            </div>
+
+            <div class="form-group">
+                <label for="salesCash">销售或提供劳务收到的现金（万元）：</label>
+                <input type="number" id="salesCash" placeholder="请输入销售或提供劳务收到的现金">
+            </div>
+
+            <div class="form-group">
+                <label for="operatingIncome">主营业务收入净额（万元）：</label>
+                <input type="number" id="operatingIncome" placeholder="请输入主营业务收入净额">
+            </div>
+
+            <div class="form-group">
+                <label for="industrySelect">行业种类：</label>
+                <div class="dropdown">
+                    <input type="text" id="industrySelect" readonly placeholder="请选择行业种类" onclick="toggleDropdown()">
+                    <div id="myDropdown" class="dropdown-content">
+                        <a href="#" onclick="selectIndustry('农林牧渔业')">农林牧渔业</a>
+                        <a href="#" onclick="selectIndustry('工业')">工业</a>
+                        <a href="#" onclick="selectIndustry('建筑业')">建筑业</a>
+                        <a href="#" onclick="selectIndustry('批发业')">批发业</a>
+                        <a href="#" onclick="selectIndustry('零售业')">零售业</a>
+                        <a href="#" onclick="selectIndustry('交通运输业')">交通运输业</a>
+                        <a href="#" onclick="selectIndustry('仓储业')">仓储业</a>
+                        <a href="#" onclick="selectIndustry('邮政业')">邮政业</a>
+                        <a href="#" onclick="selectIndustry('住宿业')">住宿业</a>
+                        <a href="#" onclick="selectIndustry('餐饮业')">餐饮业</a>
+                        <a href="#" onclick="selectIndustry('信息传输业')">信息传输业</a>
+                        <a href="#" onclick="selectIndustry('软件和信息技术服务业')">软件和信息技术服务业</a>
+                        <a href="#" onclick="selectIndustry('房地产开发经营')">房地产开发经营</a>
+                        <a href="#" onclick="selectIndustry('物业管理')">物业管理</a>
+                        <a href="#" onclick="selectIndustry('租赁和商务服务业')">租赁和商务服务业</a>
+                        <a href="#" onclick="selectIndustry('其他行业')">其他行业</a>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="analyze()">盈利质量分析</button>
+        </section>
+
+        <section class="result-section">
+            <h2>盈利质量分析结果</h2>
+            <div id="result">请先输入数据并点击"盈利质量分析"</div>
+        </section>
+
+        <section class="formula-section">
+            <div class="formula-title">计算公式</div>
+            <div class="formula-item">
+                <strong>全部资产现金回收率</strong>
+                <div class="formula-content">全部资产现金回收率 = 经营活动现金流量净额 ÷ [（期初资产总额 + 期末资产总额）/ 2] × 100%</div>
+            </div>
+            <div class="formula-item">
+                <strong>盈利现金比率</strong>
+                <div class="formula-content">盈利现金比率 = （经营活动现金流量净额 ÷ 净利润）× 100%</div>
+            </div>
+            <div class="formula-item">
+                <strong>销售收现比率</strong>
+                <div class="formula-content">销售收现比率 = （销售或提供劳务收到的现金 ÷ 主营业务收入净额）× 100%</div>
+            </div>
+        </section>
+
+        <div class="contact-info">
+            本结果仅供参考，如有疑问，请联系绥芬河市工业信息科技局 0453-3962217
+        </div>
+    </div>
+
+    <script>
+        // 创建动态背景
+        function createBackground() {
+            const container = document.getElementById('background');
+            const colors = ['#00f2fe', '#4facfe', '#00ffcb', '#ff6a8d'];
+            
+            for (let i = 0; i < 15; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
+                
+                // 随机大小和位置
+                const size = Math.random() * 200 + 50;
+                circle.style.width = `${size}px`;
+                circle.style.height = `${size}px`;
+                circle.style.left = `${Math.random() * 100}%`;
+                circle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机颜色
+                const colorIndex = Math.floor(Math.random() * colors.length);
+                circle.style.background = `radial-gradient(circle, ${colors[colorIndex]}, transparent)`;
+                
+                // 随机动画延迟
+                circle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                container.appendChild(circle);
+            }
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // 选择行业
+        function selectIndustry(industry) {
+            document.getElementById("industrySelect").value = industry;
+            document.getElementById("myDropdown").classList.remove("show");
+        }
+
+        // 点击其他地方关闭下拉菜单
+        window.onclick = function(event) {
+            if (!event.target.matches('#industrySelect')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // 分析函数
+        function analyze() {
+            // 获取输入值
+            const cashFlow = parseFloat(document.getElementById('cashFlow').value);
+            const initialAssets = parseFloat(document.getElementById('initialAssets').value);
+            const finalAssets = parseFloat(document.getElementById('finalAssets').value);
+            const netProfit = parseFloat(document.getElementById('netProfit').value);
+            const salesCash = parseFloat(document.getElementById('salesCash').value);
+            const operatingIncome = parseFloat(document.getElementById('operatingIncome').value);
+            const industry = document.getElementById('industrySelect').value;
+
+            // 验证输入
+            if (!cashFlow || !initialAssets || !finalAssets || !netProfit || !salesCash || !operatingIncome || !industry) {
+                document.getElementById('result').innerText = "请填写所有字段！";
+                return;
+            }
+
+            // 计算指标
+            const assetCashRecoveryRate = (cashFlow / ((initialAssets + finalAssets) / 2)) * 100;
+            const profitCashRatio = (cashFlow / netProfit) * 100;
+            const salesCashRatio = (salesCash / operatingIncome) * 100;
+
+            // 构建结果文本
+            let resultText = `计算结果：
+
+全部资产现金回收率：${assetCashRecoveryRate.toFixed(2)}%
+盈利现金比率：${profitCashRatio.toFixed(2)}%
+销售收现比率：${salesCashRatio.toFixed(2)}%
+
+`;
+
+            // 根据行业和指标进行分析
+            resultText += "盈利质量分析：\n";
+
+            // 分析全部资产现金回收率
+            if (assetCashRecoveryRate > 5) {
+                resultText += "• 全部资产现金回收率较高，表明企业资产产生现金的能力较强，资产运营效率高。\n";
+            } else if (assetCashRecoveryRate > 2) {
+                resultText += "• 全部资产现金回收率适中，资产运营效率一般，有一定提升空间。\n";
+            } else {
+                resultText += "• 全部资产现金回收率较低，资产运营效率有待提高，需关注资产变现能力。\n";
+            }
+
+            // 分析盈利现金比率
+            if (profitCashRatio > 120) {
+                resultText += "• 盈利现金比率超过120%，表明企业盈利质量很高，净利润的现金实现能力强。\n";
+            } else if (profitCashRatio > 80) {
+                resultText += "• 盈利现金比率在合理区间，表明企业盈利质量较好，净利润基本能够转化为现金。\n";
+            } else if (profitCashRatio > 50) {
+                resultText += "• 盈利现金比率偏低，可能存在较多应收账款，盈利质量有待提升。\n";
+            } else {
+                resultText += "• 盈利现金比率较低，盈利质量堪忧，可能存在虚盈实亏的情况。\n";
+            }
+
+            // 分析销售收现比率
+            if (salesCashRatio > 100) {
+                resultText += "• 销售收现比率大于100%，表明企业销售回款能力强，现金流健康。\n";
+            } else if (salesCashRatio > 80) {
+                resultText += "• 销售收现比率较高，销售回款情况良好，主营业务现金实现能力强。\n";
+            } else if (salesCashRatio > 60) {
+                resultText += "• 销售收现比率适中，但需关注应收账款管理，加强回款工作。\n";
+            } else {
+                resultText += "• 销售收现比率较低，可能存在大量赊销，需加强应收账款管理。\n";
+            }
+
+            // 结合行业特点分析
+            resultText += `\n结合${industry}行业特点分析：\n`;
+            
+            switch(industry) {
+                case '农林牧渔业':
+                    resultText += "农林牧渔企业通常受季节性影响较大，若现金回收稳定，说明抗风险能力较强。";
+                    break;
+                case '工业':
+                    resultText += "工业企业应关注产能利用率与现金流匹配度，当前现金流状况显示企业运营良好。";
+                    break;
+                case '建筑业':
+                    resultText += "建筑行业项目周期较长，现金流状况良好表明项目资金回笼顺利，垫资压力较小。";
+                    break;
+                case '批发业':
+                    resultText += "批发行业对资金周转要求高，良好的现金流状况有助于扩大经营规模和提升竞争力。";
+                    break;
+                case '零售业':
+                    resultText += "零售行业现金流直接反映经营效率，当前状况表明企业运营稳健，客户支付能力强。";
+                    break;
+                case '交通运输业':
+                    resultText += "交通运输企业固定成本较高，稳定的现金流入保障了运营的持续性。";
+                    break;
+                case '信息传输业':
+                case '软件和信息技术服务业':
+                    resultText += "IT行业通常轻资产运营，较高的现金回收率体现了其商业模式的优势。";
+                    break;
+                case '房地产开发经营':
+                    resultText += "房地产行业现金流状况良好，说明销售去化率较高，资金回笼及时。";
+                    break;
+                default:
+                    resultText += `在${industry}行业中，当前的盈利质量指标处于行业中上水平，体现了较强的市场竞争力。`;
+            }
+
+            // 提出建议
+            resultText += "\n\n建议：\n";
+            if (assetCashRecoveryRate < 5) {
+                resultText += "1. 加强资产管理，提高资产运营效率，处置闲置资产，优化资产结构。\n";
+            }
+            if (profitCashRatio < 80) {
+                resultText += "2. 强化应收账款管理，缩短收款周期，提高盈利的现金含量。\n";
+            }
+            if (salesCashRatio < 80) {
+                resultText += "3. 优化销售政策，适当收紧信用条件，提高销售回款率。\n";
+            }
+            resultText += "4. 持续监控现金流状况，确保企业运营资金充足。\n";
+            resultText += "5. 定期进行财务分析，及时调整经营策略以应对市场变化。";
+
+            // 显示结果
+            document.getElementById('result').innerText = resultText;
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createBackground();
+        });
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

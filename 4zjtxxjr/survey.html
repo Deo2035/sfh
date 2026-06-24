@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专精特新小巨人企业-自我测评器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2a4d69, #4b86b4);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .question-container {
+            background: rgba(0, 20, 40, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+        }
+
+        .option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: #4facfe;
+            transform: translateY(-3px);
+        }
+
+        .option.selected {
+            border-color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+        }
+
+        .result-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(0, 20, 40, 0.6);
+            border-radius: 15px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-content {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            padding: 20px;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .options {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景容器 -->
+    <div id="background"></div>
+
+    <div class="container">
+        <header>
+            <h1>专精特新小巨人企业-自我测评器</h1>
+            <p class="subtitle">请根据实际情况回答以下问题</p>
+        </header>
+
+        <main>
+            <div class="question-container">
+                <div class="question-title">（一）已获得专精特新中小企业称号，截至上年末从事特定细分市场时间达 3 年以上。</div>
+                <div class="options">
+                    <div class="option" data-question="1" data-value="yes">是</div>
+                    <div class="option" data-question="1" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（二）上年度营业收入总额达 5000 万元以上，主营业务收入总额占营业收入总额比重不低于 90%。近两年营业收入复合增长率不低于 5%（复核企业不考查该项指标），上年末资产负债率不超过 75%。</div>
+                <div class="options">
+                    <div class="option" data-question="2" data-value="yes">是</div>
+                    <div class="option" data-question="2" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（三）近两年研发费用合计不低于 1200 万元，且每年占营业收入比重均不低于 3%。</div>
+                <div class="options">
+                    <div class="option" data-question="3" data-value="yes">是</div>
+                    <div class="option" data-question="3" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（四）拥有 4 项以上与主导产品相关的Ι类知识产权，且实际应用并已产生经济效益。对近三年获得国家级科技奖励（排名前三）的企业，不考察本项指标。</div>
+                <div class="options">
+                    <div class="option" data-question="4" data-value="yes">是</div>
+                    <div class="option" data-question="4" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（五）主导产品在国内或国际细分市场占有率达到 10%以上或国内前三名，且享有较高知名度、影响力。</div>
+                <div class="options">
+                    <div class="option" data-question="5" data-value="yes">是</div>
+                    <div class="option" data-question="5" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（六）主导产品属于制造业核心基础零部件、核心基础元器件、关键软件、先进基础工艺、关键基础材料、产业技术基础，或属于改造提升传统产业、培育壮大新兴产业、布局建设未来产业，位于产业链关键环节，对提升产业链供应链韧性和安全水平发挥重要作用。</div>
+                <div class="options">
+                    <div class="option" data-question="6" data-value="yes">是</div>
+                    <div class="option" data-question="6" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-title">（七）本年度中小企业专精特新发展评价得分达 60 分以上（复核企业近两年任意一年达 60 分以上即可）。指标体系见《中小企业专精特新发展评价指标体系（试行）》。</div>
+                <div class="options">
+                    <div class="option" data-question="7" data-value="yes">是</div>
+                    <div class="option" data-question="7" data-value="no">否</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn" id="getResultBtn">点击查看结果</button>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div class="result-content">
+                    <span class="highlight">恭喜您，您有可能成为专精特新小巨人企业，请联系绥芬河市工业信息科技局进行官方认定并查看优惠政策</span>
+                </div>
+                <div class="contact-info">
+                    本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局0453-3962217
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>专精特新小巨人企业测评系统 © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // 创建动态背景
+        function createBackground() {
+            const bg = document.getElementById('background');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const size = Math.random() * 100 + 20;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画
+                const duration = Math.random() * 20 + 10;
+                particle.style.animation = `float ${duration}s infinite linear`;
+                
+                bg.appendChild(particle);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes float {
+                    0% {
+                        transform: translate(0, 0) rotate(0deg);
+                        opacity: 0.3;
+                    }
+                    25% {
+                        transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(90deg);
+                        opacity: 0.5;
+                    }
+                    50% {
+                        transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg);
+                        opacity: 0.3;
+                    }
+                    75% {
+                        transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(270deg);
+                        opacity: 0.4;
+                    }
+                    100% {
+                        transform: translate(0, 0) rotate(360deg);
+                        opacity: 0.3;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 初始化选项选择功能
+        function initOptions() {
+            const options = document.querySelectorAll('.option');
+            const answers = {};
+
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    const value = this.getAttribute('data-value');
+
+                    // 移除同题其他选项的选中状态
+                    document.querySelectorAll(`[data-question="${question}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+
+                    // 添加当前选项的选中状态
+                    this.classList.add('selected');
+
+                    // 记录答案
+                    answers[question] = value;
+                });
+            });
+
+            // 结果按钮事件
+            document.getElementById('getResultBtn').addEventListener('click', function() {
+                const allAnswered = [1, 2, 3, 4, 5, 6, 7].every(q => answers[q]);
+                
+                if (!allAnswered) {
+                    alert('请完成所有题目后再查看结果！');
+                    return;
+                }
+                
+                // 检查是否全部为"是"
+                const allYes = Object.values(answers).every(value => value === 'yes');
+                
+                const resultSection = document.getElementById('resultSection');
+                if (allYes) {
+                    resultSection.style.display = 'block';
+                    
+                    // 滚动到结果部分
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('根据您的选择，目前不符合专精特新小巨人企业的基本条件。请注意，这只是一个初步评估，具体标准请以官方要求为准。');
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createBackground();
+            initOptions();
+        });
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>

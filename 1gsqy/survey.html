@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规上企业-自我测评器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2a4d8e, #3a6ea5);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 动态背景 */
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            letter-spacing: 2px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: #4da6ff;
+            box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+        }
+
+        .industry-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: rgba(30, 30, 50, 0.95);
+            min-width: 100%;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            z-index: 1;
+            border-radius: 8px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(77, 166, 255, 0.3);
+        }
+
+        .show {
+            display: block;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #0066cc, #0099ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #0077e6, #00aaff);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 102, 204, 0.6);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            display: none;
+            width: 100%;
+            text-align: center;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .result.warning {
+            border-left: 5px solid #f44336;
+        }
+
+        .result p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            margin-top: 15px;
+            font-style: italic;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .financial-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .icon {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 24px;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .input-group input, .input-group select {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景Canvas -->
+    <canvas id="canvas"></canvas>
+    
+    <!-- 财务元素图标 -->
+    <div class="financial-icons" id="financialIcons"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>规上企业-自我测评器</h1>
+        </div>
+
+        <div class="form-container">
+            <div class="input-group">
+                <label for="revenue">年营业收入（万元）</label>
+                <input type="number" id="revenue" placeholder="请输入年营业收入（万元）">
+            </div>
+
+            <div class="input-group">
+                <label for="industry">行业种类</label>
+                <div class="industry-dropdown">
+                    <input type="text" id="industry" placeholder="点击选择行业种类" readonly onclick="toggleDropdown()">
+                    <div id="dropdownList" class="dropdown-content">
+                        <a onclick="selectIndustry('工业')">工业</a>
+                        <a onclick="selectIndustry('批发业')">批发业</a>
+                        <a onclick="selectIndustry('零售业')">零售业</a>
+                        <a onclick="selectIndustry('住宿和餐饮业')">住宿和餐饮业</a>
+                        <a onclick="selectIndustry('房地产开发经营')">房地产开发经营</a>
+                        <a onclick="selectIndustry('服务业1（交通运输、仓储和邮政业、信息传输、软件和信息技术服务业、水利、环境和公共设施管理业、卫生业）')">服务业1（交通运输、仓储和邮政业、信息传输、软件和信息技术服务业、水利、环境和公共设施管理业、卫生业）</a>
+                        <a onclick="selectIndustry('服务业2（租赁和商务服务业，科学研究和技术服务业，教育业，物业管理、房地产中介服务、房地产租赁经营和其他房地产业）')">服务业2（租赁和商务服务业，科学研究和技术服务业，教育业，物业管理、房地产中介服务、房地产租赁经营和其他房地产业）</a>
+                        <a onclick="selectIndustry('服务业3（居民服务、修理和其他服务业、文化、体育和娱乐业、社会工作）')">服务业3（居民服务、修理和其他服务业、文化、体育和娱乐业、社会工作）</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="checkResult()">点击查看结果</button>
+
+            <div id="result" class="result">
+                <p id="resultText"></p>
+                <p class="contact-info">本结果仅供参考，如需官方认定，请联系绥芬河市工业信息科技局0453-3962217</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化动态背景
+        window.onload = function() {
+            initBackground();
+            initFinancialIcons();
+        };
+
+        // 动态背景绘制
+        function initBackground() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置canvas大小为窗口大小
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // 数据点
+            let particles = [];
+            const particleCount = 100;
+            
+            // 创建粒子
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    color: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, 255, ${Math.random() * 0.5 + 0.1})`
+                });
+            }
+            
+            // 绘制函数
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制连线
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(100, 150, 255, ${0.2 * (1 - distance / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                    
+                    // 绘制粒子
+                    ctx.beginPath();
+                    ctx.arc(particles[i].x, particles[i].y, particles[i].radius, 0, Math.PI * 2);
+                    ctx.fillStyle = particles[i].color;
+                    ctx.fill();
+                }
+                
+                // 更新粒子位置
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].x += particles[i].speedX;
+                    particles[i].y += particles[i].speedY;
+                    
+                    // 边界检测
+                    if (particles[i].x < 0 || particles[i].x > canvas.width) particles[i].speedX *= -1;
+                    if (particles[i].y < 0 || particles[i].y > canvas.height) particles[i].speedY *= -1;
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+            
+            // 窗口大小改变时调整canvas
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+        
+        // 添加财务元素图标
+        function initFinancialIcons() {
+            const iconsContainer = document.getElementById('financialIcons');
+            const financialSymbols = ['$', '€', '£', '%', '#', '+', '-', '=', '×', '÷', '∑', '∏', '∫', '∂', '∇', '√', '∞'];
+            
+            for (let i = 0; i < 30; i++) {
+                const icon = document.createElement('div');
+                icon.className = 'icon';
+                icon.textContent = financialSymbols[Math.floor(Math.random() * financialSymbols.length)];
+                
+                // 随机位置
+                icon.style.left = `${Math.random() * 100}%`;
+                icon.style.top = `${Math.random() * 100}%`;
+                
+                // 随机旋转和大小
+                icon.style.transform = `rotate(${Math.random() * 360}deg) scale(${Math.random() * 1.5 + 0.5})`;
+                
+                // 随机动画
+                icon.style.animation = `float ${Math.random() * 20 + 10}s infinite linear`;
+                
+                iconsContainer.appendChild(icon);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes float {
+                    0% { transform: translate(0, 0) rotate(0deg); }
+                    25% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg); }
+                    50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 720}deg); }
+                    100% { transform: translate(0, 0) rotate(0deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 切换下拉菜单显示/隐藏
+        function toggleDropdown() {
+            document.getElementById("dropdownList").classList.toggle("show");
+        }
+
+        // 选择行业
+        function selectIndustry(industry) {
+            document.getElementById("industry").value = industry;
+            document.getElementById("dropdownList").classList.remove("show");
+        }
+
+        // 检查结果
+        function checkResult() {
+            const revenue = parseFloat(document.getElementById("revenue").value);
+            const industry = document.getElementById("industry").value;
+            
+            if (!revenue || isNaN(revenue)) {
+                alert("请输入有效的年营业收入！");
+                return;
+            }
+            
+            if (!industry) {
+                alert("请选择行业种类！");
+                return;
+            }
+            
+            // 定义标准
+            const standards = {
+                "工业": 2000,
+                "批发业": 2000,
+                "零售业": 500,
+                "住宿和餐饮业": 200,
+                "房地产开发经营": 10,
+                "服务业1（交通运输、仓储和邮政业、信息传输、软件和信息技术服务业、水利、环境和公共设施管理业、卫生业）": 2000,
+                "服务业2（租赁和商务服务业，科学研究和技术服务业，教育业，物业管理、房地产中介服务、房地产租赁经营和其他房地产业）": 1000,
+                "服务业3（居民服务、修理和其他服务业、文化、体育和娱乐业、社会工作）": 500
+            };
+            
+            // 获取当前行业的标准
+            const threshold = standards[industry];
+            
+            // 显示结果
+            const resultDiv = document.getElementById("result");
+            const resultText = document.getElementById("resultText");
+            
+            if (revenue >= threshold) {
+                resultText.innerHTML = `<strong>您的企业可能为规上企业，请联系绥芬河市工信局进行官方认定并查看优惠政策</strong>`;
+                resultDiv.className = "result";
+            } else {
+                resultText.innerHTML = `根据您提供的信息，您的企业年营业收入未达到该行业规上企业的标准。${industry}行业需要年营业收入达到${threshold}万元及以上。`;
+                resultDiv.className = "result warning";
+            }
+            
+            resultDiv.style.display = "block";
+        }
+
+        // 点击其他地方关闭下拉菜单
+        window.onclick = function(event) {
+            if (!event.target.matches('#industry') && !event.target.matches('.industry-dropdown')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove("show");
+                }
+            }
+        }
+    </script>
+    <script src="../assets/site-footer.js"></script>
+</body>
+</html>
