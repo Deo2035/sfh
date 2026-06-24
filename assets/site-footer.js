@@ -58,4 +58,20 @@
     wrap.id = 'site-footer-root';
     wrap.innerHTML = html;
     document.body.appendChild(wrap);
+
+    // 访问追踪（数据看板用）
+    try {
+        var payload = {
+            path: location.pathname + (location.search || ''),
+            referer: document.referrer || '',
+            ua: navigator.userAgent || '',
+            screen: (screen.width || 0) + 'x' + (screen.height || 0),
+        };
+        var body = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }));
+        } else {
+            fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+        }
+    } catch (e) { /* 追踪失败不影响页面 */ }
 })();

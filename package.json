@@ -1,0 +1,9 @@
+{
+  "name": "sfhgxj-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "绥芬河市工业信息科技局服务平台",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}
