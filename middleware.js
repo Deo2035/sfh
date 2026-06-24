@@ -1,10 +1,9 @@
 /**
- * Edge Middleware - 数据看板鉴权
- * 保护 /dashboard.html 与 /api/stats
- * 用户名密码从环境变量读取，未配置时使用默认值（部署后请在 Vercel 后台修改）
+ * Edge Middleware - 数据看板 API 鉴权
+ * 只保护 /api/stats（dashboard.html 改为内部登录）
  */
 export const config = {
-    matcher: ['/dashboard.html', '/api/stats'],
+    matcher: ['/api/stats'],
 };
 
 const DEFAULT_USER = 'sfhgxj';
@@ -13,7 +12,6 @@ const DEFAULT_PASS = 'SfH2026gxj';
 function checkAuth(authHeader) {
     if (!authHeader || !authHeader.startsWith('Basic ')) return false;
     try {
-        // Edge runtime 中没有 atob，用 Uint8Array + TextDecoder 解码
         const b64 = authHeader.slice(6);
         const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
         const decoded = new TextDecoder().decode(bin);
@@ -34,11 +32,11 @@ export default function middleware(req) {
     if (checkAuth(auth)) {
         return new Response(null, { status: 200 });
     }
-    return new Response('需要登录才能访问数据看板', {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
         status: 401,
         headers: {
-            'WWW-Authenticate': 'Basic realm="绥芬河市工业信息科技局·数据看板", charset="UTF-8"',
-            'Content-Type': 'text/plain; charset=utf-8',
+            'WWW-Authenticate': 'Basic realm="sfhgxj", charset="UTF-8"',
+            'Content-Type': 'application/json; charset=utf-8',
         },
     });
 }
