@@ -8,7 +8,7 @@ export const config = {
 };
 
 const DEFAULT_USER = 'sfhgxj';
-const DEFAULT_PASS = 'SfH2026@gxj';
+const DEFAULT_PASS = 'SfH2026gxj';
 
 function checkAuth(authHeader) {
     if (!authHeader || !authHeader.startsWith('Basic ')) return false;
