@@ -416,6 +416,31 @@
     © 2026 绥芬河市工业信息科技局 · 技术支持：<a href="/">大连富乐达科技有限公司</a>
 </div>
 
+<!-- 登录覆盖层 -->
+<div id="login-overlay" style="position:fixed;inset:0;background:rgba(18,40,80,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:#fff;border-radius:8px;padding:36px 40px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="text-align:center;margin-bottom:24px;">
+            <div style="width:48px;height:48px;background:var(--gov-red);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;">🔒</div>
+            <h2 style="font-size:18px;color:var(--text-1);margin-bottom:6px;">数据看板登录</h2>
+            <p style="color:var(--text-3);font-size:12px;">绥芬河市工业信息科技局服务平台</p>
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">用户名</label>
+            <input id="login-user" type="text" autocomplete="username" placeholder="请输入用户名" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:18px;">
+            <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">密码</label>
+            <input id="login-pass" type="password" autocomplete="current-password" placeholder="请输入密码" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;" />
+        </div>
+        <button id="login-btn" style="width:100%;padding:12px;background:var(--gov-red);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">登 录</button>
+        <div id="login-error" style="margin-top:12px;color:var(--gov-red);font-size:12px;text-align:center;min-height:16px;"></div>
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:var(--text-3);text-align:center;line-height:1.6;">
+            默认账号：sfhgxj / SfH2026gxj<br>
+            建议在 Vercel 后台 Environment Variables 改为强密码
+        </div>
+    </div>
+</div>
+
 <script>
     // Chart.js 全局默认
     if (window.Chart) {
@@ -426,21 +451,82 @@
 
     let charts = {};
     let currentData = null;
+    const AUTH_KEY = 'sfhgxj_dash_auth';
+
+    // Base64 编解码（UTF-8 安全）
+    function b64Encode(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+    function b64Decode(b64) {
+        return decodeURIComponent(escape(atob(b64)));
+    }
+
+    function getAuthHeader() {
+        const c = sessionStorage.getItem(AUTH_KEY);
+        return c ? 'Basic ' + c : null;
+    }
+
+    function showLogin(errorMsg) {
+        const overlay = document.getElementById('login-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('main-content').style.opacity = '0.3';
+        document.getElementById('main-content').style.pointerEvents = 'none';
+        if (errorMsg) {
+            document.getElementById('login-error').textContent = errorMsg;
+        } else {
+            document.getElementById('login-error').textContent = '';
+        }
+    }
+
+    function hideLogin() {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.opacity = '1';
+        document.getElementById('main-content').style.pointerEvents = 'auto';
+    }
+
+    function doLogin() {
+        const u = document.getElementById('login-user').value.trim();
+        const p = document.getElementById('login-pass').value;
+        if (!u || !p) {
+            document.getElementById('login-error').textContent = '请输入用户名和密码';
+            return;
+        }
+        sessionStorage.setItem(AUTH_KEY, b64Encode(u + ':' + p));
+        document.getElementById('login-error').textContent = '正在验证...';
+        loadData();
+    }
+
+    function doLogout() {
+        sessionStorage.removeItem(AUTH_KEY);
+        currentData = null;
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        showLogin();
+    }
 
     async function loadData() {
+        const headers = { 'Cache-Control': 'no-store' };
+        const auth = getAuthHeader();
+        if (auth) headers['Authorization'] = auth;
+
         try {
-            const res = await fetch('/api/stats', { credentials: 'include', cache: 'no-store' });
+            const res = await fetch('/api/stats', { headers, cache: 'no-store' });
+
             if (res.status === 401) {
-                document.body.innerHTML = '<div style="padding:80px;text-align:center;font-family:sans-serif"><h2>认证失败</h2><p>请刷新页面重新输入用户名密码</p></div>';
+                // 凭据无效或缺失
+                sessionStorage.removeItem(AUTH_KEY);
+                showLogin('用户名或密码错误，请重试');
                 return;
             }
             if (!res.ok) throw new Error('HTTP ' + res.status);
+
             const data = await res.json();
             currentData = data;
+            hideLogin();
             render(data);
         } catch (e) {
             console.error(e);
-            document.getElementById('recent-tbody').innerHTML = '<tr><td colspan="6" class="empty">数据加载失败：' + e.message + '</td></tr>';
+            showLogin('网络错误：' + e.message);
         }
     }
 
@@ -678,16 +764,25 @@
     });
 
     document.getElementById('btn-refresh').addEventListener('click', loadData);
+    document.getElementById('btn-logout').addEventListener('click', doLogout);
+    document.getElementById('login-btn').addEventListener('click', doLogin);
+    document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
 
     // 倒计时自动刷新
     let sec = 60;
     setInterval(() => {
         sec--;
-        if (sec <= 0) { sec = 60; loadData(); }
+        if (sec <= 0) { sec = 60; if (currentData) loadData(); }
         document.getElementById('countdown').textContent = sec;
     }, 1000);
 
-    loadData();
+    // 初始：凭据存在则尝试自动登录，否则显示登录表单
+    if (getAuthHeader()) {
+        loadData();
+    } else {
+        showLogin();
+    }
 </script>
 
 </body>
