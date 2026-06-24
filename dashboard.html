@@ -310,12 +310,11 @@
         <div class="actions">
             <button class="btn" id="btn-refresh">🔄 刷新</button>
             <button class="btn" id="btn-export">📥 导出 CSV</button>
-            <button class="btn" id="btn-logout" style="color:#c8102e;">退出登录</button>
         </div>
     </div>
 </div>
 
-<main>
+<main id="main-content">
     <div class="gen-time">数据生成时间：<strong id="genTime">--</strong>　·　下次自动刷新：<span id="countdown">60</span> 秒</div>
 
     <!-- 核心 KPI -->
@@ -417,31 +416,6 @@
     © 2026 绥芬河市工业信息科技局 · 技术支持：<a href="/">大连富乐达科技有限公司</a>
 </div>
 
-<!-- 登录覆盖层 -->
-<div id="login-overlay" style="position:fixed;inset:0;background:rgba(18,40,80,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-    <div style="background:#fff;border-radius:8px;padding:36px 40px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="text-align:center;margin-bottom:24px;">
-            <div style="width:48px;height:48px;background:var(--gov-red);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;">🔒</div>
-            <h2 style="font-size:18px;color:var(--text-1);margin-bottom:6px;">数据看板登录</h2>
-            <p style="color:var(--text-3);font-size:12px;">绥芬河市工业信息科技局服务平台</p>
-        </div>
-        <div style="margin-bottom:14px;">
-            <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">用户名</label>
-            <input id="login-user" type="text" autocomplete="username" value="admin" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;background:#f5f5f5;color:#666;" readonly />
-        </div>
-        <div style="margin-bottom:18px;">
-            <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">密码</label>
-            <input id="login-pass" type="password" autocomplete="current-password" placeholder="请输入密码" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;" />
-        </div>
-        <button id="login-btn" style="width:100%;padding:12px;background:var(--gov-red);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s;">登 录</button>
-        <div id="login-error" style="margin-top:12px;color:var(--gov-red);font-size:12px;text-align:center;min-height:16px;"></div>
-        <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:var(--text-3);text-align:center;line-height:1.6;">
-            🔐 凭据以 SHA-256 哈希传输与存储，明文密码不落库<br>
-            密码由项目负责人在 Vercel 后台统一管理
-        </div>
-    </div>
-</div>
-
 <script>
     // Chart.js 全局默认
     if (window.Chart) {
@@ -452,94 +426,17 @@
 
     let charts = {};
     let currentData = null;
-    const AUTH_KEY = 'sfhgxj_dash_auth';
-
-    // SHA-256 哈希（密码永不以明文传输或存储）
-    async function sha256(text) {
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    function getAuthHeader() {
-        const h = sessionStorage.getItem(AUTH_KEY);
-        return h ? 'Bearer ' + h : null;
-    }
-
-    function showLogin(errorMsg) {
-        const overlay = document.getElementById('login-overlay');
-        overlay.style.display = 'flex';
-        document.getElementById('main-content').style.opacity = '0.3';
-        document.getElementById('main-content').style.pointerEvents = 'none';
-        const btn = document.getElementById('login-btn');
-        btn.disabled = false;
-        btn.textContent = '登 录';
-        btn.style.opacity = '1';
-        if (errorMsg) {
-            document.getElementById('login-error').textContent = errorMsg;
-        } else {
-            document.getElementById('login-error').textContent = '';
-        }
-    }
-
-    function hideLogin() {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('main-content').style.opacity = '1';
-        document.getElementById('main-content').style.pointerEvents = 'auto';
-    }
-
-    async function doLogin() {
-        const p = document.getElementById('login-pass').value;
-        if (!p) {
-            document.getElementById('login-error').textContent = '请输入密码';
-            return;
-        }
-        const btn = document.getElementById('login-btn');
-        btn.disabled = true;
-        btn.textContent = '正在验证...';
-        btn.style.opacity = '0.7';
-        document.getElementById('login-error').textContent = '';
-
-        try {
-            // 密码以 SHA-256 哈希后传输，密码明文不出浏览器主线程之外的任何地方
-            const hash = await sha256(p);
-            sessionStorage.setItem(AUTH_KEY, hash);
-            await loadData();
-        } catch (e) {
-            console.error(e);
-            showLogin('登录失败：' + e.message);
-        }
-    }
-
-    function doLogout() {
-        sessionStorage.removeItem(AUTH_KEY);
-        currentData = null;
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-        showLogin();
-    }
 
     async function loadData() {
-        const headers = { 'Cache-Control': 'no-store' };
-        const auth = getAuthHeader();
-        if (auth) headers['Authorization'] = auth;
-
         try {
-            const res = await fetch('/api/stats', { headers, cache: 'no-store' });
-
-            if (res.status === 401) {
-                sessionStorage.removeItem(AUTH_KEY);
-                showLogin('用户名或密码错误');
-                return;
-            }
+            const res = await fetch('/api/stats', { cache: 'no-store' });
             if (!res.ok) throw new Error('HTTP ' + res.status);
-
             const data = await res.json();
             currentData = data;
-            hideLogin();
             render(data);
         } catch (e) {
             console.error(e);
-            showLogin('网络错误：' + e.message);
+            document.getElementById('recent-tbody').innerHTML = '<tr><td colspan="6" class="empty">数据加载失败：' + e.message + '</td></tr>';
         }
     }
 
@@ -737,7 +634,12 @@
     }
 
     // 导出 CSV
-    document.getElementById('btn-export').addEventListener('click', () => {
+    function bind(id, evt, fn) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(evt, fn);
+    }
+    bind('btn-refresh', 'click', loadData);
+    bind('btn-export', 'click', () => {
         if (!currentData) return;
         const d = currentData;
         let csv = '\uFEFF';
@@ -776,32 +678,15 @@
         a.click();
     });
 
-    // 事件绑定（带容错）
-    function bind(id, evt, fn) {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener(evt, fn);
-        else console.warn('元素未找到:', id);
-    }
-    bind('btn-refresh', 'click', loadData);
-    bind('btn-logout', 'click', doLogout);
-    bind('login-btn', 'click', doLogin);
-    bind('login-pass', 'keydown', e => { if (e.key === 'Enter') doLogin(); });
-    bind('login-user', 'keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
-
     // 倒计时自动刷新
     let sec = 60;
     setInterval(() => {
         sec--;
-        if (sec <= 0) { sec = 60; if (currentData) loadData(); }
+        if (sec <= 0) { sec = 60; loadData(); }
         document.getElementById('countdown').textContent = sec;
     }, 1000);
 
-    // 初始：凭据存在则尝试自动登录，否则显示登录表单
-    if (getAuthHeader()) {
-        loadData();
-    } else {
-        showLogin();
-    }
+    loadData();
 </script>
 
 </body>
