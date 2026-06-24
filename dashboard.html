@@ -426,17 +426,17 @@
         </div>
         <div style="margin-bottom:14px;">
             <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">用户名</label>
-            <input id="login-user" type="text" autocomplete="username" placeholder="请输入用户名" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;" />
+            <input id="login-user" type="text" autocomplete="username" value="admin" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;background:#f5f5f5;color:#666;" readonly />
         </div>
         <div style="margin-bottom:18px;">
             <label style="display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;">密码</label>
             <input id="login-pass" type="password" autocomplete="current-password" placeholder="请输入密码" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box;" />
         </div>
-        <button id="login-btn" style="width:100%;padding:12px;background:var(--gov-red);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">登 录</button>
+        <button id="login-btn" style="width:100%;padding:12px;background:var(--gov-red);color:#fff;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s;">登 录</button>
         <div id="login-error" style="margin-top:12px;color:var(--gov-red);font-size:12px;text-align:center;min-height:16px;"></div>
         <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:var(--text-3);text-align:center;line-height:1.6;">
-            默认账号：sfhgxj / SfH2026gxj<br>
-            建议在 Vercel 后台 Environment Variables 改为强密码
+            🔐 凭据以 SHA-256 哈希传输与存储，明文密码不落库<br>
+            密码由项目负责人在 Vercel 后台统一管理
         </div>
     </div>
 </div>
@@ -453,17 +453,15 @@
     let currentData = null;
     const AUTH_KEY = 'sfhgxj_dash_auth';
 
-    // Base64 编解码（UTF-8 安全）
-    function b64Encode(str) {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
-    function b64Decode(b64) {
-        return decodeURIComponent(escape(atob(b64)));
+    // SHA-256 哈希（密码永不以明文传输或存储）
+    async function sha256(text) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     function getAuthHeader() {
-        const c = sessionStorage.getItem(AUTH_KEY);
-        return c ? 'Basic ' + c : null;
+        const h = sessionStorage.getItem(AUTH_KEY);
+        return h ? 'Bearer ' + h : null;
     }
 
     function showLogin(errorMsg) {
@@ -471,6 +469,10 @@
         overlay.style.display = 'flex';
         document.getElementById('main-content').style.opacity = '0.3';
         document.getElementById('main-content').style.pointerEvents = 'none';
+        const btn = document.getElementById('login-btn');
+        btn.disabled = false;
+        btn.textContent = '登 录';
+        btn.style.opacity = '1';
         if (errorMsg) {
             document.getElementById('login-error').textContent = errorMsg;
         } else {
@@ -484,16 +486,27 @@
         document.getElementById('main-content').style.pointerEvents = 'auto';
     }
 
-    function doLogin() {
-        const u = document.getElementById('login-user').value.trim();
+    async function doLogin() {
         const p = document.getElementById('login-pass').value;
-        if (!u || !p) {
-            document.getElementById('login-error').textContent = '请输入用户名和密码';
+        if (!p) {
+            document.getElementById('login-error').textContent = '请输入密码';
             return;
         }
-        sessionStorage.setItem(AUTH_KEY, b64Encode(u + ':' + p));
-        document.getElementById('login-error').textContent = '正在验证...';
-        loadData();
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true;
+        btn.textContent = '正在验证...';
+        btn.style.opacity = '0.7';
+        document.getElementById('login-error').textContent = '';
+
+        try {
+            // 密码以 SHA-256 哈希后传输，密码明文不出浏览器主线程之外的任何地方
+            const hash = await sha256(p);
+            sessionStorage.setItem(AUTH_KEY, hash);
+            await loadData();
+        } catch (e) {
+            console.error(e);
+            showLogin('登录失败：' + e.message);
+        }
     }
 
     function doLogout() {
@@ -513,9 +526,8 @@
             const res = await fetch('/api/stats', { headers, cache: 'no-store' });
 
             if (res.status === 401) {
-                // 凭据无效或缺失
                 sessionStorage.removeItem(AUTH_KEY);
-                showLogin('用户名或密码错误，请重试');
+                showLogin('用户名或密码错误');
                 return;
             }
             if (!res.ok) throw new Error('HTTP ' + res.status);
