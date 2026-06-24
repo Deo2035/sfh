@@ -310,6 +310,7 @@
         <div class="actions">
             <button class="btn" id="btn-refresh">🔄 刷新</button>
             <button class="btn" id="btn-export">📥 导出 CSV</button>
+            <button class="btn" id="btn-logout" style="color:#c8102e;">退出登录</button>
         </div>
     </div>
 </div>
@@ -775,11 +776,17 @@
         a.click();
     });
 
-    document.getElementById('btn-refresh').addEventListener('click', loadData);
-    document.getElementById('btn-logout').addEventListener('click', doLogout);
-    document.getElementById('login-btn').addEventListener('click', doLogin);
-    document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-    document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
+    // 事件绑定（带容错）
+    function bind(id, evt, fn) {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(evt, fn);
+        else console.warn('元素未找到:', id);
+    }
+    bind('btn-refresh', 'click', loadData);
+    bind('btn-logout', 'click', doLogout);
+    bind('login-btn', 'click', doLogin);
+    bind('login-pass', 'keydown', e => { if (e.key === 'Enter') doLogin(); });
+    bind('login-user', 'keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
 
     // 倒计时自动刷新
     let sec = 60;
