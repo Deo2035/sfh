@@ -315,7 +315,7 @@
 </div>
 
 <main id="main-content">
-    <div class="gen-time">数据生成时间：<strong id="genTime">--</strong>　·　下次自动刷新：<span id="countdown">60</span> 秒</div>
+    <div class="gen-time">数据生成时间：<strong id="genTime">--</strong>　·　<span id="status-text">正在连接数据服务（首次访问可能需要 15-25 秒）...</span>　·　下次自动刷新：<span id="countdown">60</span> 秒</div>
 
     <!-- 核心 KPI -->
     <div class="kpi-grid">
@@ -678,11 +678,11 @@
         a.click();
     });
 
-    // 倒计时自动刷新
-    let sec = 60;
+    // 倒计时自动刷新（90 秒间隔，留足冷启动缓冲）
+    let sec = 90;
     setInterval(() => {
         sec--;
-        if (sec <= 0) { sec = 60; loadData(); }
+        if (sec <= 0) { sec = 90; loadData(); }
         document.getElementById('countdown').textContent = sec;
     }, 1000);
 
