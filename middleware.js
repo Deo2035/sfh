@@ -1,10 +1,14 @@
 /**
  * Edge Middleware - 数据看板鉴权
  * 保护 /dashboard.html 与 /api/stats
+ * 用户名密码从环境变量读取，未配置时使用默认值（部署后请在 Vercel 后台修改）
  */
 export const config = {
     matcher: ['/dashboard.html', '/api/stats'],
 };
+
+const DEFAULT_USER = 'sfhgxj';
+const DEFAULT_PASS = 'SfH2026@gxj';
 
 function checkAuth(authHeader) {
     if (!authHeader || !authHeader.startsWith('Basic ')) return false;
@@ -17,7 +21,9 @@ function checkAuth(authHeader) {
         if (idx < 0) return false;
         const u = decoded.slice(0, idx);
         const p = decoded.slice(idx + 1);
-        return u === process.env.AUTH_USER && p === process.env.AUTH_PASS;
+        const expectU = process.env.AUTH_USER || DEFAULT_USER;
+        const expectP = process.env.AUTH_PASS || DEFAULT_PASS;
+        return u === expectU && p === expectP;
     } catch {
         return false;
     }
