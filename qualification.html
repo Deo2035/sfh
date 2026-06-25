@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#c8102e">
+    <title>企业资质自我评测 - 绥芬河市工业信息科技局服务平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gov-red: #c8102e;
+            --gov-red-dark: #a00c24;
+            --gov-blue: #1c3d72;
+            --gov-blue-dark: #122850;
+            --text-1: #1a1a1a;
+            --text-2: #4a4a4a;
+            --text-3: #7a7a7a;
+            --line: #e6e6e6;
+            --bg: #f4f6f9;
+            --card: #ffffff;
+            --green: #2ea043;
+            --orange: #d97706;
+        }
+        html, body {
+            font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Source Han Sans CN", sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+        a { color: inherit; text-decoration: none; }
+
+        /* 顶部条：极简 */
+        .topbar {
+            background: var(--gov-red);
+            color: #fff;
+            padding: 6px 0;
+            font-size: 12px;
+        }
+        .topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar a {
+            color: #fff;
+            opacity: 0.95;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .topbar a:hover { opacity: 1; }
+
+        /* 头部：首屏重要 */
+        .header {
+            background: #fff;
+            border-bottom: 4px solid var(--gov-red);
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 18px 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-icon {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--gov-red) 0%, var(--gov-red-dark) 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icon svg { width: 32px; height: 32px; fill: #fff; }
+        .header-text { flex: 1; min-width: 0; }
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-1);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+        .header-text .sub {
+            color: var(--text-3);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .header-back {
+            flex-shrink: 0;
+            padding: 8px 14px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--text-2);
+            transition: all .2s;
+        }
+        .header-back:hover {
+            border-color: var(--gov-red);
+            color: var(--gov-red);
+        }
+
+        main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        /* 引导条：公众号使用提示 */
+        .guide {
+            background: #fff8e6;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        .guide svg { width: 18px; height: 18px; flex-shrink: 0; fill: #f59e0b; }
+
+        /* 分类筛选 */
+        .filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 6px 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-2);
+            cursor: pointer;
+            transition: all .2s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .filter-tag.active {
+            background: var(--gov-red);
+            color: #fff;
+            border-color: var(--gov-red);
+        }
+        .filter-tag:not(.active):hover {
+            border-color: var(--gov-red);
+            color: var(--gov-red);
+        }
+
+        /* 卡片网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--gov-red);
+            border-radius: 6px;
+            padding: 18px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all .2s;
+            cursor: pointer;
+        }
+        .card:hover {
+            border-color: var(--gov-red);
+            border-left-color: var(--gov-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(200,16,46,0.12);
+        }
+        .card-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gov-red) 0%, var(--gov-red-dark) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s;
+        }
+        .card:hover .card-icon {
+            background: linear-gradient(135deg, var(--gov-blue) 0%, var(--gov-blue-dark) 100%);
+        }
+        .card-icon svg { width: 26px; height: 26px; fill: #fff; }
+        .card-body { flex: 1; min-width: 0; }
+        .card-body h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-1);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .card-body p {
+            font-size: 12px;
+            color: var(--text-3);
+            line-height: 1.4;
+        }
+        .card-tag {
+            display: inline-block;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 2px;
+            margin-top: 4px;
+            background: rgba(200,16,46,.1);
+            color: var(--gov-red);
+        }
+        .card[data-cat="report"] .card-tag { background: rgba(28,61,114,.1); color: var(--gov-blue); }
+        .card-arrow {
+            flex-shrink: 0;
+            color: var(--text-3);
+            font-size: 18px;
+            transition: transform .2s, color .2s;
+        }
+        .card:hover .card-arrow {
+            color: var(--gov-blue);
+            transform: translateX(4px);
+        }
+
+        /* 响应式：移动端 2 列紧凑 */
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .topbar-inner, .header-inner, main { padding-left: 16px; padding-right: 16px; }
+            .header-text h1 { font-size: 19px; }
+            .header-text .sub { font-size: 12px; }
+            .header-icon { width: 44px; height: 44px; }
+            .header-icon svg { width: 24px; height: 24px; }
+            .header-back { padding: 6px 10px; font-size: 12px; }
+            .grid { grid-template-columns: 1fr; gap: 10px; }
+            .card { padding: 14px; gap: 12px; }
+            .card-icon { width: 42px; height: 42px; }
+            .card-icon svg { width: 22px; height: 22px; }
+            .card-body h3 { font-size: 14px; }
+            .card-body p { font-size: 11px; }
+            .guide { font-size: 12px; padding: 10px 12px; }
+            .filter-tag { padding: 5px 10px; font-size: 12px; }
+        }
+        @media (max-width: 360px) {
+            .header-text h1 { font-size: 17px; }
+            .card-body h3 { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <span id="topbar-date">--</span>
+        <a href="/">返回首页 →</a>
+    </div>
+</div>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="header-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        </div>
+        <div class="header-text">
+            <h1>企业资质自我评测</h1>
+            <div class="sub">科技企业资质一站式自测，对标政策申报条件</div>
+        </div>
+        <a href="/" class="header-back">← 首页</a>
+    </div>
+</header>
+
+<main>
+    <div class="guide">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <span>请选择需要评测的资质类型，点击对应卡片即可开始在线自测</span>
+    </div>
+
+    <div class="filter" id="filter">
+        <span class="filter-tag active" data-cat="all">全部</span>
+        <span class="filter-tag" data-cat="enterprise">企业资质</span>
+        <span class="filter-tag" data-cat="report">孵化器</span>
+    </div>
+
+    <div class="grid">
+        <a class="card" href="/1gsqy/survey.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>规上企业自测</h3>
+                <p>规模以上工业企业资格评估</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/3kjxzxqy/assessment.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M7 15h7v2H7zm0-4h10v2H7zm0-4h10v2H7zm12-4h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-.14 0-.27.01-.4.04-.39.08-.74.28-1.01.55-.18.18-.33.4-.43.64-.1.23-.16.49-.16.77v14c0 .27.06.54.16.78s.25.45.43.64c.27.27.62.47 1.01.55.13.02.26.03.4.03h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM19 19H5V5h14v14z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>科技型中小企业自测</h3>
+                <p>科技部科技型中小企业入库评价</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/4zjtxzxqy/survey.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>专精特新中小企业自测</h3>
+                <p>省级专精特新中小企业评价</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/4zjtxxjr/survey.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1.06 13.54L7.4 12l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41-5.64 5.66z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>专精特新"小巨人"自测</h3>
+                <p>国家级专精特新小巨人企业评价</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/5.cxx/survey.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>创新型中小企业自测</h3>
+                <p>创新型中小企业评价指标</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/6gfuhua/survey.html" data-cat="report">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>国家级科技企业孵化器</h3>
+                <p>国家级科技企业孵化器认定条件</p>
+                <span class="card-tag">孵化器</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/6sfuhua/survey.html" data-cat="report">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>省级企业孵化器自测</h3>
+                <p>省级科技企业孵化器认定条件</p>
+                <span class="card-tag">孵化器</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+
+        <a class="card" href="/7.gaoqi/index.html" data-cat="enterprise">
+            <div class="card-icon">
+                <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0014 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            </div>
+            <div class="card-body">
+                <h3>高新技术企业自测</h3>
+                <p>国家高新技术企业认定条件自评</p>
+                <span class="card-tag">企业资质</span>
+            </div>
+            <div class="card-arrow">›</div>
+        </a>
+    </div>
+</main>
+
+<script src="assets/site-footer.js"></script>
+<script>
+    // 实时日期
+    (function () {
+        var d = new Date();
+        var w = ['日','一','二','三','四','五','六'][d.getDay()];
+        var p = function (x) { return x < 10 ? '0' + x : x; };
+        document.getElementById('topbar-date').textContent =
+            d.getFullYear() + '年' + p(d.getMonth() + 1) + '月' + p(d.getDate()) + '日　星期' + w;
+    })();
+
+    // 分类筛选
+    (function () {
+        var tags = document.querySelectorAll('.filter-tag');
+        var cards = document.querySelectorAll('.card');
+        tags.forEach(function (tag) {
+            tag.addEventListener('click', function () {
+                tags.forEach(function (t) { t.classList.remove('active'); });
+                tag.classList.add('active');
+                var cat = tag.getAttribute('data-cat');
+                cards.forEach(function (card) {
+                    if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    })();
+</script>
+</body>
+</html>
